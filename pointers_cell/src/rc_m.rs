@@ -1,7 +1,7 @@
 #![allow(clippy::drop_ref)]
-use std::ptr::NonNull;
-
 use crate::cel_m::CellM;
+use std::marker::PhantomData;
+use std::ptr::NonNull;
 
 struct RcInner<T> {
     value: T,
@@ -10,6 +10,7 @@ struct RcInner<T> {
 
 pub struct RcM<T> {
     inner: NonNull<RcInner<T>>,
+    _marker: PhantomData<RcInner<T>>,
 }
 
 impl<T> RcM<T> {
@@ -19,7 +20,9 @@ impl<T> RcM<T> {
             refcount: CellM::new(1),
         });
         RcM {
+            // SAFETY: Box does not give us a null ptr
             inner: unsafe { NonNull::new_unchecked(Box::into_raw(inner)) },
+            _marker: PhantomData,
         }
     }
 }
@@ -38,7 +41,10 @@ impl<T> Clone for RcM<T> {
         let inner = unsafe { self.inner.as_ref() };
         let count = inner.refcount.get();
         inner.refcount.set(count + 1);
-        RcM { inner: self.inner }
+        RcM {
+            inner: self.inner,
+            _marker: PhantomData,
+        }
     }
 }
 
@@ -56,4 +62,10 @@ impl<T> Drop for RcM<T> {
             inner.refcount.set(rc - 1);
         }
     }
+}
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn bad() {}
 }
