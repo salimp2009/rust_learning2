@@ -23,6 +23,23 @@ pub fn calculate_length(s: String) -> (String, usize) {
     (s, length)
 }
 
+pub fn first_word(s: &str) -> &str {
+    let bytes = s.as_bytes();
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return &s[0..i];
+        }
+    }
+    s
+}
+
+pub fn first_word_alt(s: &str) -> &str {
+    let mut iterator = s.split_whitespace();
+    if let Some(first_word) = iterator.next() {
+        return first_word;
+    };
+    s
+}
 fn main() {
     let s1 = String::from("hello");
     let s2 = s1.clone();
@@ -44,4 +61,8 @@ fn main() {
     println!("takes_and_gives_ownership: {s4}");
     let (s5, len) = calculate_length(s4);
     println!("string: {s5} and length: {len}");
+    let word1 = first_word("heloo rust");
+    println!("word1: {word1}");
+    let slice1: &str = &"hello world".to_string()[0..5];
+    println!("slice1: {slice1}");
 }
