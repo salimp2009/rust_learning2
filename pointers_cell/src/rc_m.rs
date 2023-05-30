@@ -1,5 +1,6 @@
 #![allow(clippy::drop_ref)]
 use crate::cel_m::CellM;
+use std::borrow::Cow;
 use std::marker::PhantomData;
 use std::ptr::NonNull;
 
@@ -64,6 +65,24 @@ impl<T> Drop for RcM<T> {
     }
 }
 
+fn already_escaped(input: &str) -> bool {
+    true
+}
+
+// example for Cow; clone-on-write smart pointer
+// it can be used Borrowed or Clone and it copies fur mutating if necessary
+// Borrow uses a ref and Owned use an allocated type turn &str into String
+// or a slice into Vec
+fn _escape<'a>(s: &'a str) -> Cow<'a, str> {
+    if already_escaped(s) {
+        Cow::Borrowed(s)
+    } else {
+        let mut string = s.to_string();
+        // do somestuff
+        Cow::Owned(string)
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -73,6 +92,6 @@ mod test {
         let (y, x): (&String, String);
         x = String::from("hello");
         y = *RcM::new(&x);
-        println!("y: {}, x:{x}", *y)
+        println!("y: {}, x:{x}", *y);
     }
 }
