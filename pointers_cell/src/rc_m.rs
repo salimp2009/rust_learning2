@@ -66,6 +66,13 @@ impl<T> Drop for RcM<T> {
 
 #[cfg(test)]
 mod test {
+    use super::*;
+
     #[test]
-    fn bad() {}
+    fn bad() {
+        let (y, x): (&String, String);
+        x = String::from("hello");
+        y = *RcM::new(&x);
+        println!("y: {}, x:{x}", *y)
+    }
 }
