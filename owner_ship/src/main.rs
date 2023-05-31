@@ -33,6 +33,16 @@ pub fn first_word(s: &str) -> &str {
     s
 }
 
+pub fn first_word2(s: &str) -> &str {
+    let words = s.split(' ').collect::<Vec<_>>();
+    words[0]
+}
+
+pub fn first_word3(s: &str) -> &str {
+    let words = s.split_whitespace().collect::<Vec<_>>();
+    words[0]
+}
+
 pub fn first_word_alt(s: &str) -> &str {
     let mut iterator = s.split_whitespace();
     if let Some(first_word) = iterator.next() {
@@ -61,8 +71,23 @@ fn main() {
     println!("takes_and_gives_ownership: {s4}");
     let (s5, len) = calculate_length(s4);
     println!("string: {s5} and length: {len}");
-    let word1 = first_word("heloo rust");
+
+    let mut s = String::from("helloЗд Rustiiii");
+    let word1 = first_word(&s);
+
+    // illegal use of mutable since it is borrowed and used after
+    // s.clear();
     println!("word1: {word1}");
-    let slice1: &str = &"hello world".to_string()[0..5];
+
+    // when using slice indices, if not Latin characters are used
+    // it might cause problems to due char boundary
+    // since those are encoded with 2 bytes
+    let slice1: &str = &"hello  world".to_string()[0..6];
     println!("slice1: {slice1}");
+
+    let word1_alt = first_word_alt(&s);
+    println!("word2 : {}", word1_alt);
+
+    let word1_alt2 = first_word2(&s);
+    println!("word1_alt2: {word1_alt2}");
 }
