@@ -1,5 +1,11 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+pub trait Hello {
+    fn hi(&self);
+}
+
+impl Hello for &str {
+    fn hi(&self) {
+        println!("hi {self}");
+    }
 }
 
 pub fn strlen_m(s: impl AsRef<str>) -> usize {
@@ -17,6 +23,7 @@ where
 pub fn foo() {
     println!("{}", strlen_m("hello world"));
     println!("{}", strlen_m(String::from("hei Salitosssss")));
+    "J".hi();
 }
 
 #[cfg(test)]
