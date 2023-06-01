@@ -26,16 +26,20 @@ where
     s.as_ref().len()
 }
 
+pub fn strlen_3<S>(s: &dyn AsRef<str>) -> usize {
+    s.as_ref().len()
+}
+
 pub fn foo() {
     println!("{}", strlen_m("hello world"));
     println!("{}", strlen_m(String::from("hei Salitosssss")));
     "J".hi();
     bar(&[&"J", &"Joo"]);
-    bar(&[&String::from("Didokis"), &String::from("Salitos")]);
+    bar(&[&String::from("Didokis"), &"salitos"]);
 }
 
 pub fn bar(s: &[&dyn Hello]) {
-    s.iter().for_each(|elem| elem.hi());
+    s.iter().for_each(|&elem| elem.hi());
 }
 
 #[cfg(test)]
