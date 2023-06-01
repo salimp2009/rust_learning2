@@ -30,11 +30,11 @@ pub fn foo() {
     println!("{}", strlen_m("hello world"));
     println!("{}", strlen_m(String::from("hei Salitosssss")));
     "J".hi();
-    bar(&["J", "Joo"]);
-    bar(&[String::from("Didokis"), String::from("Salitos")]);
+    bar(&[&"J", &"Joo"]);
+    bar(&[&String::from("Didokis"), &String::from("Salitos")]);
 }
 
-pub fn bar(s: &[impl Hello]) {
+pub fn bar(s: &[&dyn Hello]) {
     s.iter().for_each(|elem| elem.hi());
 }
 
