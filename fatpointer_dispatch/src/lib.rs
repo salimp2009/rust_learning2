@@ -26,7 +26,11 @@ where
     s.as_ref().len()
 }
 
-pub fn strlen_3<S>(s: &dyn AsRef<str>) -> usize {
+pub fn strlen_3(s: Box<dyn AsRef<str>>) -> usize {
+    s.as_ref().as_ref().len()
+}
+
+pub fn strlen_4(s: &dyn AsRef<str>) -> usize {
     s.as_ref().len()
 }
 
@@ -35,12 +39,18 @@ pub fn foo() {
     println!("{}", strlen_m(String::from("hei Salitosssss")));
 
     println!(
-        "str_len3 with &dynAsRef with &str: {}",
-        strlen_3::<&str>(&"sssss")
+        "str_len3 with dyn AsRef with &str: {}",
+        strlen_3(Box::new("sssss"))
     );
+
     println!(
-        "strlen_3; dynAsRef with String: {}",
-        strlen_3::<&String>(&String::from("hei Salitosssss"))
+        "strlen_3; dyn AsRef with String: {}",
+        strlen_3(Box::new(String::from("hei Salitosssss")))
+    );
+
+    println!(
+        "strlen_3; dyn AsRef with String: {}",
+        strlen_3(Box::new(String::from("hei Salitosssss")))
     );
 
     "J".hi();
