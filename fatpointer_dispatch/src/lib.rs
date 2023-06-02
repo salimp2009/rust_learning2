@@ -33,7 +33,18 @@ pub fn strlen_3<S>(s: &dyn AsRef<str>) -> usize {
 pub fn foo() {
     println!("{}", strlen_m("hello world"));
     println!("{}", strlen_m(String::from("hei Salitosssss")));
+
+    println!(
+        "str_len3 with &dynAsRef with &str: {}",
+        strlen_3::<&str>(&"sssss")
+    );
+    println!(
+        "strlen_3; dynAsRef with String: {}",
+        strlen_3::<&String>(&String::from("hei Salitosssss"))
+    );
+
     "J".hi();
+
     bar(&[&"J", &"Joo"]);
     bar(&[&String::from("Didokis"), &"salitos"]);
 }
