@@ -57,10 +57,15 @@ pub fn foo() {
 
     bar(&[&"J", &"Joo"]);
     bar(&[&String::from("Didokis"), &"salitos"]);
+    bar_box(&[Box::new(String::from("Didokis")), Box::new("salitos")]);
 }
 
 pub fn bar(s: &[&dyn Hello]) {
     s.iter().for_each(|&elem| elem.hi());
+}
+
+pub fn bar_box(s: &[Box<dyn Hello>]) {
+    s.iter().for_each(|elem| elem.hi());
 }
 
 #[cfg(test)]
