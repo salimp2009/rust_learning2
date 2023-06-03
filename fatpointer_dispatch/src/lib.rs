@@ -68,6 +68,22 @@ pub fn bar_box(s: &[Box<dyn Hello>]) {
     s.iter().for_each(|elem| elem.hi());
 }
 
+pub fn baz(s: &(dyn Hello + Send + Sync)) {
+    s.hi();
+    let s = s;
+    s.hi();
+}
+
+pub trait HelloAsRef: Hello + AsRef<str> {}
+
+impl HelloAsRef for &str {}
+
+pub fn baz_hi(s: &dyn HelloAsRef) {
+    s.hi();
+    let s = s.as_ref();
+    println!("s length: {}", s.len());
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -80,6 +96,13 @@ mod tests {
     #[test]
     fn strlen_test2() {
         foo();
+        assert_eq!(strlen_m("hello salim"), 11);
+    }
+    #[test]
+    fn strlen_test3() {
+        baz(&("semooos"));
+        baz(&(String::from("salitosss")));
+        baz_hi(&("trait objects cool!"));
         assert_eq!(strlen_m("hello salim"), 11);
     }
 }
