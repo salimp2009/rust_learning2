@@ -8,6 +8,9 @@
   - [Available Scripts](#available-scripts) - [`cargo run`](#cargo-run) - [`cargo test`](#cargo-test)
   <!--toc:end-->
 
+<!-- | ![rust_crab](./rust_crab.svg) | -->
+<!-- | ----------------------------- | -->
+
 Learning Rust; from "The Book" and misc. videos
 
 ![flatten-01 ](./flatten01.png)
