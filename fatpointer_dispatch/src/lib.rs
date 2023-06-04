@@ -1,5 +1,14 @@
 pub trait Hello {
     fn hi(&self);
+
+    // trait is still trait object safe but this function cannot be called
+    // it will not be in the v-table
+    // when traits is used as trait object; dyn Hello
+    fn weird(&self)
+    where
+        Self: Sized,
+    {
+    }
 }
 
 impl Hello for &str {
@@ -77,6 +86,7 @@ pub fn baz(s: &(dyn Hello + Send + Sync)) {
 pub trait HelloAsRef: Hello + AsRef<str> {}
 
 impl HelloAsRef for &str {}
+impl HelloAsRef for String {}
 
 pub fn baz_hi(s: &dyn HelloAsRef) {
     s.hi();
@@ -103,6 +113,7 @@ mod tests {
         baz(&("semooos"));
         baz(&(String::from("salitosss")));
         baz_hi(&("trait objects cool!"));
+        baz_hi(&String::from("trait objects are super cool"));
         assert_eq!(strlen_m("hello salim"), 11);
     }
 }
