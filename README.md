@@ -11,9 +11,9 @@
 <!-- | ![rust_crab](./rust_crab.svg) | -->
 <!-- | ----------------------------- | -->
 
-Learning Rust; from "The Book" and misc. videos
+🦀🦀🦀 Learning Rust; from "The Book" and misc. videos 🦀🦀🦀
 
-![flatten-01 ](./flatten01.png)
+![flatten-01 ](./flatten01.png)  
 ![flatten-01 ](./flatten02_debug.png)
 
 ## Getting Started
