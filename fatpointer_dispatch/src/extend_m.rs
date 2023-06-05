@@ -1,4 +1,4 @@
-use std::iter::Extend;
+use std::{fmt::Display, iter::Extend};
 
 #[derive(Debug)]
 struct MyVec<T>(Vec<T>);
@@ -39,6 +39,15 @@ pub fn extend_example() {
     println!("messages extended: {messages:?} ");
 }
 
+pub fn it<T>(v: &mut dyn Iterator<Item = T>)
+where
+    T: Display,
+{
+    let _x = v.next();
+    v.into_iter()
+        .for_each(|item| println!("trait object Iterator: {}", item));
+}
+
 // pub fn extend_example2(v: &mut dyn Extend<bool>) {
 //     v.extend(std::iter::once(true));
 // }
@@ -57,5 +66,10 @@ mod extend_tests {
     #[test]
     fn test_myvec() {
         extend_myvec();
+    }
+
+    #[test]
+    fn test_it() {
+        it(&mut [true, false, true].into_iter());
     }
 }
