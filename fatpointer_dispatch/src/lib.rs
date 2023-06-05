@@ -1,4 +1,4 @@
-pub mod collect_m;
+pub mod extend_m;
 
 pub trait Hello {
     fn hi(&self);
@@ -99,7 +99,7 @@ pub fn baz_hi(s: &dyn HelloAsRef) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::collect_m::extend_example;
+
     #[test]
     fn strlen_test1() {
         assert_eq!(strlen_m("hello"), 5);
@@ -108,9 +108,9 @@ mod tests {
     #[test]
     fn strlen_test2() {
         foo();
-        extend_example();
         assert_eq!(strlen_m("hello salim"), 11);
     }
+
     #[test]
     fn strlen_test3() {
         baz(&("semooos"));
