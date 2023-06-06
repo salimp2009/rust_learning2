@@ -29,6 +29,10 @@ pub fn value_in_cents(coin: Coin) -> u8 {
     }
 }
 
+pub fn plus_one(x: Option<i32>) -> Option<i32> {
+    x.map(|value| value + 1)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -36,5 +40,11 @@ mod tests {
     #[test]
     fn cents_check_() {
         assert_eq!(value_in_cents(Coin::Quarter(UsStates::Seattle)), 25);
+    }
+
+    #[test]
+    fn plusone_check_() {
+        let x = plus_one(Some(5));
+        assert_eq!(x, Some(6));
     }
 }
