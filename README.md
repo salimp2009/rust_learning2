@@ -1,6 +1,6 @@
 # LEARNING Rust - Learning Rust
 
-![flatten-01 ](./rust_crab.svg =100x80)
+<!-- ![flatten-01 ](./rust_crab.svg =100x80) -->
 
 <!--toc:start-->
 
