@@ -52,6 +52,13 @@ where
 //     v.extend(std::iter::once(true));
 // }
 
+// dynamic custom type
+pub struct Foo {
+    f: bool,
+    x: bool,
+    t: [u8],
+}
+
 #[cfg(test)]
 mod extend_tests {
     use super::*;
