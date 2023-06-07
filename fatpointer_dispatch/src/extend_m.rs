@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use std::{fmt::Display, iter::Extend};
 
 #[derive(Debug)]
@@ -59,6 +60,18 @@ pub struct Foo {
     t: [u8],
 }
 
+fn foo(f: &dyn Fn()) {
+    f();
+}
+
+fn bar<T>(f: &dyn Fn() -> T) -> T {
+    f()
+}
+
+fn bar2(f: fn()) {
+    f()
+}
+
 #[cfg(test)]
 mod extend_tests {
     use super::*;
@@ -78,5 +91,16 @@ mod extend_tests {
     #[test]
     fn test_it() {
         it(&mut [true, false, true].into_iter());
+    }
+
+    #[test]
+    fn test_dynfunc() {
+        let x = String::from("yello");
+        foo(&|| println!("{}", &x));
+        println!("{}", bar(&|| &x));
+        println!("x: {x}");
+        // below doesn't work since it expects a function pointer
+        // let testfn = &|| println!("{}", &x);
+        // bar2(&testfn);
     }
 }
