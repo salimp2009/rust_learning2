@@ -1,9 +1,12 @@
 # LEARNING Rust - Learning Rust
 
+<!-- below format did not work for github but works with Markdown preview-->
 <!-- ![flatten-01 ](./rust_crab.svg =100x80) -->
+
 <div>
 <img src="./rust_crab.svg" width="100" height="80"/>
 </div
+
 <!--toc:start-->
 
 - [LEARNING Rust - Learning Rust](#learning-rust-learning-rust)
