@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use std::mem::{size_of, size_of_val};
 
 pub fn bar<T>() {
@@ -15,10 +17,39 @@ pub fn foo() -> usize {
 
 pub fn quox<F>(f: F)
 where
-    F: Fn(),
+    F: FnMut(),
 {
 }
 
+// pub trait Fnm<Args>: FnOnce(Args) {
+//     fn call(&self, args: Args) -> Self::Output;
+// }
+
+// impl<A, F> Fnm<A> for F
+// where
+//     F: ~const Fnm<A> + ?Sized,
+//     A: std::marker::Tuple,
+// {
+//     fn call(&self, args: A) -> Self::Output {
+//         *self.call(args)
+//     }
+// }
+
+// impl<F> FnOnce() for F
+// where
+//     F: FnMut(),
+// {
+//     pub fn call_once(&self) -> Self::Output {
+//         F::call_once()
+//     }
+// }
+
+pub fn consume_return<F>(func: F)
+where
+    F: FnOnce() -> Vec<i32>,
+{
+    println!("Consumed: {:?}", func())
+}
 fn main() {
     println!("Hello, world!");
     // type of x is function item
@@ -33,4 +64,14 @@ fn main() {
     baz(bar::<usize>);
     baz(bar::<isize>);
     quox(bar::<usize>);
+
+    let fnptr: fn() = || println!("function pointer");
+    baz(fnptr);
+    let list = vec![1, 2, 3];
+    let consumed = move || list;
+    consume_return(consumed);
+    // consumed cannot be recalled again
+    // since it moves the captured variable
+    // consume_return(consumed);
+    // println!("{:#?}", list);
 }
