@@ -32,8 +32,10 @@ pub fn eat_at_restaurant() {
 
 fn deliver_order() {}
 
-mod back_of_house {
+pub mod back_of_house {
     // all fields in enum is public
+    use crate::front_of_house;
+
     #[derive(Debug)]
     pub enum Appetizer {
         Soup,
@@ -42,7 +44,7 @@ mod back_of_house {
 
     fn fix_incorrect_order() {
         cook_order();
-        super::deliver_order();
+        front_of_house::deliver_order();
     }
 
     fn cook_order() {}
