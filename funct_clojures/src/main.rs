@@ -16,9 +16,9 @@ pub fn foo() -> usize {
     5
 }
 
-pub fn quox<F>(mut f: F)
+pub fn quox<F>(f: &F)
 where
-    F: FnMut(),
+    F: Fn(),
 {
     f();
 }
@@ -36,7 +36,7 @@ pub fn function_items() {
     baz(x);
     baz(bar::<usize>);
     baz(bar::<isize>);
-    quox(bar::<usize>);
+    quox(&bar::<usize>);
 
     let fnptr: fn() = || println!("function pointer");
     baz(fnptr);
@@ -53,6 +53,16 @@ pub fn consumables() {
     let list = vec![1, 2, 3];
     let consumed = move || list;
     consume_return(consumed);
+    let func = || ();
+    quox(&func);
+    let z = String::from("closures");
+    // closures that captures cannot be coerced to fn() (function pointers)
+    let func2 = || {
+        // let _x = z;
+        println!("z: {z}");
+    };
+
+    quox(&func2);
     // consumed cannot be recalled again
     // FnOnce requires the ownership of the captured variable
     // since the clojure is moved the captured variable is consumed
