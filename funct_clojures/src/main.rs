@@ -6,6 +6,7 @@ pub fn bar<T>() {
     size_of::<T>();
 }
 
+// function pointer
 pub fn baz(f: fn()) {
     // add code here
     println!("size of f: {}", size_of_val(&f));
@@ -15,43 +16,14 @@ pub fn foo() -> usize {
     5
 }
 
-pub fn quox<F>(f: F)
+pub fn quox<F>(mut f: F)
 where
     F: FnMut(),
 {
+    f();
 }
 
-// pub trait Fnm<Args>: FnOnce(Args) {
-//     fn call(&self, args: Args) -> Self::Output;
-// }
-
-// impl<A, F> Fnm<A> for F
-// where
-//     F: ~const Fnm<A> + ?Sized,
-//     A: std::marker::Tuple,
-// {
-//     fn call(&self, args: A) -> Self::Output {
-//         *self.call(args)
-//     }
-// }
-
-// impl<F> FnOnce() for F
-// where
-//     F: FnMut(),
-// {
-//     pub fn call_once(&self) -> Self::Output {
-//         F::call_once()
-//     }
-// }
-
-pub fn consume_return<F>(func: F)
-where
-    F: FnOnce() -> Vec<i32>,
-{
-    println!("Consumed: {:?}", func())
-}
-fn main() {
-    println!("Hello, world!");
+pub fn function_items() {
     // type of x is function item
     let x = bar::<usize>;
     // x = bar::<isize>;
@@ -60,6 +32,7 @@ fn main() {
     //function item coerces to fn pointer
     // and since funct item is coerced into func pointer
     // size of it becomes size of a pointer (8 bytes here)
+    // function pointers implement all 3 Fn, FnMut, FnOnce
     baz(x);
     baz(bar::<usize>);
     baz(bar::<isize>);
@@ -67,11 +40,41 @@ fn main() {
 
     let fnptr: fn() = || println!("function pointer");
     baz(fnptr);
+}
+
+pub fn consume_return<F>(func: F)
+where
+    F: FnOnce() -> Vec<i32>,
+{
+    println!("Consumed: {:?}", func())
+}
+
+pub fn consumables() {
     let list = vec![1, 2, 3];
     let consumed = move || list;
     consume_return(consumed);
     // consumed cannot be recalled again
-    // since it moves the captured variable
+    // FnOnce requires the ownership of the captured variable
+    // since the clojure is moved the captured variable is consumed
+    // if it is a type like i32 or anything that implement copy then it is copied
     // consume_return(consumed);
     // println!("{:#?}", list);
+}
+pub fn baz2<F>(f: F, a: i32, b: i32) -> i32
+where
+    F: Fn(i32, i32) -> i32,
+{
+    // add code here
+    f(a, b)
+}
+
+pub fn closures() {
+    let func = |x: i32, y: i32| x + y;
+    println!("x + y: {}", baz2(func, 2, 4));
+}
+
+fn main() {
+    function_items();
+    consumables();
+    closures();
 }
