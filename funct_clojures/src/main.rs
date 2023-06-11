@@ -71,7 +71,7 @@ pub fn consumables() {
     quox(&func);
     let mut z = String::from("closures");
     // closures that captures cannot be coerced to fn() (function pointers)
-    let mut func2 = || {
+    let mut func2 = move || {
         // let _x = z;
         z.clear();
         // drop requires z to moved therefore closure becomes FnOnce but
@@ -82,6 +82,10 @@ pub fn consumables() {
     // func2 cannot be coerced to fn() since it captures variable from environment
     // baz(func2);
     // quox(&func2);
+
+    // z is moved into closure due to move keyword therefore z(String)
+    // cannot be used
+    // println!("z: {z}");
     quox2(&mut func2);
 
     let mut z2 = String::from("closures");
@@ -107,6 +111,11 @@ where
     f(a, b)
 }
 
+pub fn make_fn() -> impl FnOnce() {
+    let z = String::from("hi from make function");
+    move || println!("z from make_fn: {z}")
+}
+
 pub fn closures() {
     let func = |x: i32, y: i32| x + y;
     println!("x + y: {}", baz2(func, 2, 4));
@@ -116,4 +125,6 @@ fn main() {
     function_items();
     consumables();
     closures();
+    let func2 = make_fn();
+    func2();
 }
