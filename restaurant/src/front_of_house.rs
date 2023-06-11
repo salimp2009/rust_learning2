@@ -1,4 +1,6 @@
 #![allow(dead_code, unused)]
+use std::io::{self, Write};
+
 pub mod hosting {
     pub fn add_to_waitlist() {}
 

@@ -23,6 +23,13 @@ where
     f();
 }
 
+pub fn quox2<F>(f: &mut F)
+where
+    F: FnMut(),
+{
+    f();
+}
+
 pub fn function_items() {
     // type of x is function item
     let x = bar::<usize>;
@@ -55,14 +62,17 @@ pub fn consumables() {
     consume_return(consumed);
     let func = || ();
     quox(&func);
-    let z = String::from("closures");
+    let mut z = String::from("closures");
     // closures that captures cannot be coerced to fn() (function pointers)
-    let func2 = || {
+    let mut func2 = || {
         // let _x = z;
+        z.clear();
         println!("z: {z}");
     };
-
-    quox(&func2);
+    // func2 cannot be coerced to fn() since it captures variable from environment
+    // baz(func2);
+    // quox(&func2);
+    quox2(&mut func2);
     // consumed cannot be recalled again
     // FnOnce requires the ownership of the captured variable
     // since the clojure is moved the captured variable is consumed
