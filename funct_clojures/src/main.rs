@@ -126,5 +126,6 @@ fn main() {
     consumables();
     closures();
     let func2 = make_fn();
-    func2();
+    let f2: Box<dyn FnOnce()> = Box::new(func2);
+    f2();
 }
