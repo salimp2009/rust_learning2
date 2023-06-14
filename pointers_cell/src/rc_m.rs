@@ -1,4 +1,5 @@
 #![allow(clippy::drop_ref)]
+#![allow(dead_code)]
 use crate::cel_m::CellM;
 use std::borrow::Cow;
 use std::marker::PhantomData;
@@ -65,15 +66,11 @@ impl<T> Drop for RcM<T> {
     }
 }
 
-fn already_escaped(input: &str) -> bool {
+fn already_escaped(_input: &str) -> bool {
     true
 }
 
-// example for Cow; clone-on-write smart pointer
-// it can be used Borrowed or Clone and it copies fur mutating if necessary
-// Borrow uses a ref and Owned use an allocated type turn &str into String
-// or a slice into Vec
-fn _escape<'a>(s: &'a str) -> Cow<'a, str> {
+fn escape<'a>(s: &'a str) -> Cow<'a, str> {
     if already_escaped(s) {
         Cow::Borrowed(s)
     } else {
