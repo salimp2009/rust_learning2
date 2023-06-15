@@ -1,6 +1,9 @@
 #![allow(dead_code)]
 
-use std::ops::{Deref, DerefMut};
+use std::{
+    ops::{Deref, DerefMut},
+    ptr::read,
+};
 
 #[derive(Debug)]
 pub struct Boks<T> {
@@ -9,6 +12,9 @@ pub struct Boks<T> {
 
 impl<T> Drop for Boks<T> {
     fn drop(&mut self) {
+        // let _x = unsafe { read::<_>(self.p as *const u8) };
+        // Safety; p was constructed from a Box and has not been freed
+        // as long as self is alive
         unsafe { Box::from_raw(self.p) };
         // this will drop the T but not free the Box
         // unsafe { std::ptr::drop_in_place(self.p) }
@@ -51,4 +57,9 @@ fn main() {
         println!("Boks: {:#?}", *y);
     }
     println!("x: {x}");
+
+    let mut y = 45;
+    let x = Boks::new(&mut y);
+    // println!("Boks: {:#?}", y);
+    drop(x);
 }
