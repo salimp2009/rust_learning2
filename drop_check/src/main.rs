@@ -1,8 +1,7 @@
 #![allow(dead_code)]
-
 use std::{
+    fmt::Debug,
     ops::{Deref, DerefMut},
-    ptr::read,
 };
 
 #[derive(Debug)]
@@ -48,18 +47,31 @@ impl<T> Boks<T> {
     }
 }
 
+#[derive(Debug)]
+struct Touch<T: Debug>(T);
+
+impl<T: Debug> Drop for Touch<T> {
+    fn drop(&mut self) {
+        print!("touch drops: {:#?}", self.0);
+    }
+}
+
 fn main() {
     let x = 42;
 
     {
-        let y = Boks::new(x);
-        assert_eq!(*y, x);
+        let y = Boks::new(&x);
+        assert_eq!(**y, x);
         println!("Boks: {:#?}", *y);
     }
     println!("x: {x}");
 
     let mut y = 45;
-    let x = Boks::new(&mut y);
+    // let _x = Boks::new(&mut y);
+    let _x2 = Box::new(&mut y);
     // println!("Boks: {:#?}", y);
-    drop(x);
+
+    let mut zz = 5;
+    let b = Boks::new(Touch(&mut zz));
+    println!("touch: {:#?}", *b.0);
 }
