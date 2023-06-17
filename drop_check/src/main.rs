@@ -1,12 +1,14 @@
 #![allow(dead_code)]
 use std::{
     fmt::Debug,
+    marker::PhantomData,
     ops::{Deref, DerefMut},
 };
 
 #[derive(Debug)]
 pub struct Boks<T> {
     p: *mut T,
+    _t: PhantomData<T>,
 }
 
 impl<T> Drop for Boks<T> {
@@ -43,6 +45,7 @@ impl<T> Boks<T> {
     pub fn new(x: T) -> Self {
         Boks {
             p: Box::into_raw(Box::new(x)),
+            _t: PhantomData::<T>,
         }
     }
 }
@@ -73,5 +76,6 @@ fn main() {
 
     let mut zz = 5;
     let b = Boks::new(Touch(&mut zz));
-    println!("touch: {:#?}", *b.0);
+    // let b = Box::new(Touch(&mut zz));
+    // println!("touch: {:#?}", zz);
 }
