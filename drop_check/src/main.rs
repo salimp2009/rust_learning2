@@ -59,6 +59,16 @@ impl<T: Debug> Drop for Touch<T> {
     }
 }
 
+pub fn boks_lifetime() {
+    let zz = String::from("Boksinsie :=)");
+    // Boks is invariant over lifetime
+    // therefore you cannot change 'a to 'static
+    // to make it works Boks has to use NonNull<T> instead of *mut T
+    // let mut b = Boks::new(zz.as_str());
+    // let b2: Boks<&'static str> = Boks::new("hihihi");
+    // b = b2;
+}
+
 fn main() {
     let x = 42;
 
@@ -72,10 +82,11 @@ fn main() {
     let mut y = 45;
     // let _x = Boks::new(&mut y);
     let _x2 = Box::new(&mut y);
-    // println!("Boks: {:#?}", y);
+    // println!("Box: {:#?}", y);
 
     let mut zz = 5;
-    let b = Boks::new(Touch(&mut zz));
+    let _b = Boks::new(Touch(&mut zz));
     // let b = Box::new(Touch(&mut zz));
     // println!("touch: {:#?}", zz);
+    boks_lifetime();
 }
