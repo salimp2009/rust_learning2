@@ -3,11 +3,12 @@ use std::{
     fmt::Debug,
     marker::PhantomData,
     ops::{Deref, DerefMut},
+    ptr::NonNull,
 };
 
 #[derive(Debug)]
 pub struct Boks<T> {
-    p: *mut T,
+    p: NonNull<T>,
     _t: PhantomData<T>,
 }
 
@@ -16,7 +17,7 @@ impl<T> Drop for Boks<T> {
         // let _x = unsafe { read::<_>(self.p as *const u8) };
         // Safety; p was constructed from a Box and has not been freed
         // as long as self is alive
-        unsafe { Box::from_raw(self.p) };
+        unsafe { Box::from_raw(self.p.as_mut()) };
         // this will drop the T but not free the Box
         // unsafe { std::ptr::drop_in_place(self.p) }
     }
@@ -28,7 +29,7 @@ impl<T> Deref for Boks<T> {
         // Safety:is valid since it is constructed from a valid T
         // via Box which creates aligned pointer and has not been freed
         // when self exist
-        unsafe { &*(self.p) }
+        unsafe { self.p.as_ref() }
     }
 }
 
@@ -37,14 +38,15 @@ impl<T> DerefMut for Boks<T> {
         // Safety:is valid since it is constructed from a valid T
         // via Box which creates aligned pointer and has not been freed
         // when self exist; no other mutable reference given out to p
-        unsafe { &mut *(self.p) }
+        unsafe { self.p.as_mut() }
     }
 }
 
 impl<T> Boks<T> {
     pub fn new(x: T) -> Self {
         Boks {
-            p: Box::into_raw(Box::new(x)),
+            // Safety: Box never creates a null pointer
+            p: unsafe { NonNull::new_unchecked(Box::into_raw(Box::new(x))) },
             _t: PhantomData::<T>,
         }
     }
@@ -64,9 +66,10 @@ pub fn boks_lifetime() {
     // Boks is invariant over lifetime
     // therefore you cannot change 'a to 'static
     // to make it works Boks has to use NonNull<T> instead of *mut T
-    // let mut b = Boks::new(zz.as_str());
-    // let b2: Boks<&'static str> = Boks::new("hihihi");
-    // b = b2;
+    let mut b = Boks::new(zz.as_str());
+    let b2: Boks<&'static str> = Boks::new("hihihi");
+    b = b2;
+    println!("b coerced into b2 : {:#?}", *b);
 }
 
 fn main() {
