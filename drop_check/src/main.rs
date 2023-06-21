@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 use std::{
     fmt::Debug,
+    iter::Empty,
     marker::PhantomData,
     ops::{Deref, DerefMut},
     ptr::NonNull,
@@ -52,13 +53,24 @@ impl<T> Boks<T> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 struct Touch<T: Debug>(T);
 
 impl<T: Debug> Drop for Touch<T> {
     fn drop(&mut self) {
-        print!("touch drops: {:#?}", self.0);
+        println!("touch drops: {:#?}", self.0);
     }
+}
+
+pub fn empty_iter_example() {
+    let mut a = 55;
+    let mut it = std::iter::empty();
+    {
+        let mut touches = Some(Touch(&mut a));
+        touches = it.next();
+        println!("touches: {:#?}", touches.unwrap_or(Touch(&mut 15)));
+    }
+    println!("a from empty_iter_example {:?}", a);
 }
 
 pub fn boks_lifetime() {
@@ -87,9 +99,10 @@ fn main() {
     let _x2 = Box::new(&mut y);
     // println!("Box: {:#?}", y);
 
-    let mut zz = 5;
+    let mut zz = 35;
     let _b = Boks::new(Touch(&mut zz));
     // let b = Box::new(Touch(&mut zz));
     // println!("touch: {:#?}", zz);
     boks_lifetime();
+    empty_iter_example();
 }
