@@ -1,11 +1,7 @@
 #![allow(dead_code, unused)]
 use std::io::{self, Write};
 
-pub mod hosting {
-    pub fn add_to_waitlist() {}
-
-    pub fn seat_at_table() {}
-}
+pub mod hosting;
 
 pub mod serving {
     use super::hosting::seat_at_table;
