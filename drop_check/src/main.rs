@@ -8,7 +8,10 @@ use std::{
 
 #[derive(Debug)]
 pub struct Boks<T> {
+    // NonNull use to make Boks covariant so it can coerce
     p: NonNull<T>,
+    // PhantomData is used to imply Boks drops T and
+    // compiler needs to be triggered
     _t: PhantomData<T>,
 }
 
