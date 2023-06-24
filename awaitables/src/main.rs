@@ -1,12 +1,14 @@
 #![allow(dead_code)]
-use std::{future::Future, thread, time};
+use std::{future::Future, time};
 
-use futures::executor::block_on;
+// use futures::executor::block_on;
 
-use tokio;
+use tokio::task::JoinHandle;
 pub async fn foo1() -> usize {
     println!("foo1 is called");
-    tokio::time::sleep(time::Duration::from_secs(8)).await;
+    tokio::time::sleep(time::Duration::from_secs(15)).await;
+    println!("waiting on foo1 is complete!");
+
     0
 }
 
@@ -23,18 +25,25 @@ pub async fn foo3() -> usize {
     let x1 = foo1().await;
     let x2 = foo2().await;
     println!("x1 from foo1: {}", x1);
-    println!("x2 from foo1: {}", x2);
+    println!("x2 from foo2: {}", x2);
     0
+}
+
+pub fn not_an_async_function() -> JoinHandle<()> {
+    tokio::task::spawn(async {
+        println!("tokio task printing!");
+    })
 }
 
 #[tokio::main]
 async fn main() {
-    let _zz = foo3().await;
+    let zz = foo3().await;
+    println!("foo3 from main zz {}", zz);
     async {
         println!("hello from main");
     }
     .await;
-    println!("foo3 from main zz {}", _zz);
+    not_an_async_function().await.ok();
     // let _y = foo2();
     // let _z = async {
     //     let x = foo3().await;
