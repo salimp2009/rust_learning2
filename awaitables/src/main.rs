@@ -1,4 +1,6 @@
 #![allow(dead_code)]
+#![allow(unused_imports)]
+use awaitables::simple_future::SimpleFuture;
 use futures::executor::block_on;
 use std::{future::Future, time};
 use tokio::task::JoinHandle;
