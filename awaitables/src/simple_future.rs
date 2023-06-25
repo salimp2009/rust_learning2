@@ -13,7 +13,7 @@ pub enum Pollm<T> {
 }
 
 pub struct Socket {
-    data: u8,
+    data: Vec<u8>,
 }
 impl Socket {
     pub fn has_data_to_read(&self) -> bool {
@@ -25,7 +25,7 @@ impl Socket {
     }
 
     pub fn read_buf(&self) -> Vec<u8> {
-        vec![self.data]
+        self.data[..].to_vec()
     }
 }
 struct SocketReadm<'a> {
@@ -39,7 +39,44 @@ impl SimpleFuture for SocketReadm<'_> {
             Pollm::Ready(self.socket.read_buf())
             // Pollm::Ready(vec![1, 2, 3, 4])
         } else {
-            self.socket.set_readable_callback(wake);
+            // The socket does not yet have data.
+            //
+            // Arrange for `wake` to be called once data is available.
+            // When data becomes available, `wake` will be called, and the
+            // user of this `Future` will know to call `poll` again and
+            // receive data.self.socket.set_readable_callback(wake);
+            Pollm::Pending
+        }
+    }
+}
+
+pub struct Joinm<FutureA, FutureB> {
+    a: Option<FutureA>,
+    b: Option<FutureB>,
+}
+
+impl<FutureA, FutureB> SimpleFuture for Joinm<FutureA, FutureB>
+where
+    FutureA: SimpleFuture<Output = ()>,
+    FutureB: SimpleFuture<Output = ()>,
+{
+    type Output = ();
+    fn poll(&mut self, wake: fn()) -> Pollm<Self::Output> {
+        if let Some(a) = &mut self.a {
+            if let Pollm::Ready(()) = a.poll(wake) {
+                self.a.take();
+            }
+        }
+
+        if let Some(b) = &mut self.b {
+            if let Pollm::Ready(()) = b.poll(wake) {
+                self.b.take();
+            }
+        }
+
+        if self.a.is_none() && self.b.is_none() {
+            Pollm::Ready(())
+        } else {
             Pollm::Pending
         }
     }
