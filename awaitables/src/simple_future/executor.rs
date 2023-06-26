@@ -56,3 +56,32 @@ impl Spawnerm {
 }
 
 // to poll futures we need a Waker;
+impl ArcWake for Taskm {
+    fn wake_by_ref(arc_self: &Arc<Self>) {
+        let cloned = arc_self.clone();
+        arc_self
+            .task_sender
+            .send(cloned)
+            .expect("too many tasks queued!");
+    }
+    // add code here
+}
+
+impl Executorm {
+    fn run(&self) {
+        while let Ok(task) = self.ready_queue.recv() {
+            // Take the future, and if it has not yet completed (is still Some),
+            // poll it in an attempt to complete it.
+            let mut future_slot = task.future.lock().unwrap();
+            if let Some(mut future) = future_slot.take() {
+                // Create a `LocalWaker` from the task itself
+                let waker = waker_ref(&task);
+                let context = &mut Context::from_waker(&waker);
+                if future.as_mut().poll(context).is_pending() {
+                    *future_slot = Some(future);
+                }
+            }
+        }
+    }
+    // add code here
+}
