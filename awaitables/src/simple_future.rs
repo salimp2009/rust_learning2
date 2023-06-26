@@ -1,7 +1,8 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 use std::vec;
-
+pub mod executor;
+pub mod timer_future;
 pub trait SimpleFuture {
     type Output;
     fn poll(&mut self, wake: fn()) -> Pollm<Self::Output>;
@@ -45,6 +46,7 @@ impl SimpleFuture for SocketReadm<'_> {
             // When data becomes available, `wake` will be called, and the
             // user of this `Future` will know to call `poll` again and
             // receive data.self.socket.set_readable_callback(wake);
+            self.socket.set_readable_callback(wake);
             Pollm::Pending
         }
     }
