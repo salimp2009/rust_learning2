@@ -12,18 +12,18 @@ use std::{
 };
 
 /// Task executor that receives tasks off of a channel and runs them.
-struct Executorm {
+pub struct Executorm {
     ready_queue: Receiver<Arc<Taskm>>,
 }
 
 /// `Spawner` spawns new futures onto the task channel.
 #[derive(Debug)]
-struct Spawnerm {
+pub struct Spawnerm {
     task_sender: SyncSender<Arc<Taskm>>,
 }
 
 /// A future that can reschedule itself to be polled by an `Executor`.
-struct Taskm {
+pub struct Taskm {
     /// In-progress future that should be pushed to completion.
     ///
     /// The `Mutex` is not necessary for correctness, since we only have
@@ -37,14 +37,14 @@ struct Taskm {
     task_sender: SyncSender<Arc<Taskm>>,
 }
 
-fn new_executor_spawner() -> (Executorm, Spawnerm) {
+pub fn new_executor_spawnerm() -> (Executorm, Spawnerm) {
     const MAX_QUEUED_TASKS: usize = 10_000;
     let (task_sender, ready_queue) = sync_channel(MAX_QUEUED_TASKS);
     (Executorm { ready_queue }, Spawnerm { task_sender })
 }
 
 impl Spawnerm {
-    // spawns new futures
+    // spawns new upper level futures like Taskm
     pub fn spawn(&self, future: impl Future<Output = ()> + 'static + Send) {
         let future = future.boxed();
         let task = Arc::new(Taskm {
@@ -64,11 +64,10 @@ impl ArcWake for Taskm {
             .send(cloned)
             .expect("too many tasks queued!");
     }
-    // add code here
 }
 
 impl Executorm {
-    fn run(&self) {
+    pub fn run(&self) {
         while let Ok(task) = self.ready_queue.recv() {
             // Take the future, and if it has not yet completed (is still Some),
             // poll it in an attempt to complete it.
@@ -83,5 +82,4 @@ impl Executorm {
             }
         }
     }
-    // add code here
 }

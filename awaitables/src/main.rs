@@ -1,7 +1,10 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
+use awaitables::simple_future::executor; /* ::{new_executor_spawnerm, Executorm} ;*/
+use awaitables::simple_future::timer_future::TimerFuture;
 use awaitables::simple_future::SimpleFuture;
 use futures::executor::block_on;
+use std::time::Duration;
 use std::{future::Future, time};
 use tokio::task::JoinHandle;
 
@@ -74,6 +77,18 @@ pub async fn async_main() {
     futures::join!(f1, f2);
 }
 
+pub fn test_executorm() {
+    let (executorm, spawnerm) = executor::new_executor_spawnerm();
+    // Spawn a task to print before and after waiting on a timer.
+    spawnerm.spawn(async {
+        println!("whatis up spawner!");
+        TimerFuture::new(Duration::new(2, 0)).await;
+        println!("exceturm is done!");
+    });
+    drop(spawnerm);
+    executorm.run();
+}
+
 #[tokio::main]
 async fn main() {
     block_on(async_main());
@@ -84,4 +99,5 @@ async fn main() {
     }
     .await;
     not_an_async_function().await.ok();
+    test_executorm();
 }
