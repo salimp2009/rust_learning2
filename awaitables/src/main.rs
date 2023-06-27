@@ -6,6 +6,7 @@ use awaitables::simple_future::SimpleFuture;
 use futures::executor::block_on;
 use std::time::Duration;
 use std::{future::Future, time};
+use tokio::join;
 use tokio::task::JoinHandle;
 
 pub async fn foo1() -> usize {
@@ -17,17 +18,19 @@ pub async fn foo1() -> usize {
 }
 
 #[allow(clippy::manual_async_fn)]
-pub fn foo2() -> impl Future<Output = usize> {
-    async {
+pub fn foo2<'a>() -> impl Future<Output = usize> + 'a {
+    let x = 5;
+    async move {
         println!("printing foo2");
         // tokio::time::sleep(time::Duration::from_secs(1)).await;
-        0
+        x
     }
 }
 
 pub async fn foo3() -> usize {
     let x1 = foo1().await;
     let x2 = foo2().await;
+    println!("printing from foo3");
     println!("x1 from foo1: {}", x1);
     println!("x2 from foo2: {}", x2);
     0
@@ -88,6 +91,24 @@ pub fn test_executorm() {
     drop(spawnerm);
     executorm.run();
 }
+async fn foo5() -> u8 {
+    5
+}
+
+pub async fn foo_blocks() {
+    // value can be shared betwwen different async blocks
+    let my_string = "foo_blocks".to_string();
+
+    let future_one = async {
+        println!("my_string: {my_string}");
+    };
+
+    let future_two = async {
+        println!("my_string: {my_string}");
+    };
+
+    let ((), ()) = futures::join!(future_one, future_two);
+}
 
 #[tokio::main]
 async fn main() {
@@ -96,8 +117,10 @@ async fn main() {
     println!("foo3 from main zz {}", zz);
     async {
         println!("hello from main");
+        println!("foo5 + 8: {:#?}", foo5().await + 8);
     }
     .await;
     not_an_async_function().await.ok();
     test_executorm();
+    foo_blocks().await;
 }
