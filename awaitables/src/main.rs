@@ -110,6 +110,15 @@ pub async fn foo_blocks() {
     let ((), ()) = futures::join!(future_one, future_two);
 }
 
+pub async fn move_blocks() {
+    let my_string = "move_blocks".to_string();
+    async move {
+        println!("this moves: {my_string}");
+    }
+    .await;
+    // this is illegal since the value is moved not valid after move
+    // println!("{my_string}");
+}
 #[tokio::main]
 async fn main() {
     block_on(async_main());
@@ -123,4 +132,5 @@ async fn main() {
     not_an_async_function().await.ok();
     test_executorm();
     foo_blocks().await;
+    move_blocks().await;
 }
