@@ -15,11 +15,31 @@ pub fn vector_2() {
     let mut v: Vec<_> = vec![1, 2, 3, 4];
     assert_eq!(v, &[1, 2, 3, 4]);
     let third = v.get(2);
-    // illegal mut borrow since it is borrowed as ref on line below
     // v.push(5);
     println!("vec2: {:#?}", third);
 }
+
+pub fn vector_iterate() {
+    let v = vec![1, 2, 3, 4];
+    println!("vector_iterate");
+    v.iter()
+        .map(|elem| elem * 2)
+        .for_each(|elem| println!("{}", elem));
+
+    println!("original vector_iterate: {:#?}", v);
+}
+
+pub fn flatmap_filter() {
+    (0..5)
+        .flat_map(|x| x * 100..x * 110)
+        .enumerate()
+        .filter(|&(i, x)| (i + x) % 3 == 0)
+        .for_each(|(i, x)| println!("{i}:{x}"));
+}
+
 fn main() {
     vector_1();
     vector_2();
+    vector_iterate();
+    flatmap_filter();
 }
