@@ -57,10 +57,24 @@ pub fn vector_with_enum() {
     println!("row: {:#?}", row);
 }
 
+pub fn basic_strings() {
+    let mut s1 = String::from("fooy");
+    let s2 = "yoooww";
+    s1.push_str(s2);
+    println!("s2: {s2}");
+    let s3 = s1 + s2;
+    assert_eq!(s3, "fooyyooowwyoooww");
+    println!("s3: {s3}");
+    println!("s2: {s2}");
+    // s1 is moved into s3; it is not valid anymore!
+    // println!("s1: {s1}");
+}
+
 fn main() {
     vector_1();
     vector_2();
     vector_iterate();
     flatmap_filter();
     vector_with_enum();
+    basic_strings();
 }
