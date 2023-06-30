@@ -70,6 +70,17 @@ pub fn basic_strings() {
     // println!("s1: {s1}");
 }
 
+pub fn string_get() {
+    let mut v = String::from("hello");
+    assert_eq!(Some("he"), v.get(0..2));
+    assert_eq!(Some("he"), v.get_mut(0..2).map(|elem| &*elem));
+    assert_eq!("he", &v[0..2]);
+    let hello = "Здравствуйте";
+    let answer = hello.as_bytes();
+    println!("answer: {answer:#?}");
+    "Зд".chars().for_each(|elem| println!("{elem}"));
+}
+
 fn main() {
     vector_1();
     vector_2();
@@ -77,4 +88,5 @@ fn main() {
     flatmap_filter();
     vector_with_enum();
     basic_strings();
+    string_get();
 }
