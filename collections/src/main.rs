@@ -93,6 +93,45 @@ pub fn hashmap_basic1() {
     println!("value2: {value2}");
 }
 
+pub fn hashmap_basic2() {
+    let solar_distance = HashMap::from([
+        ("Mercury", 0.4),
+        ("Venus", 0.7),
+        ("Earth", 1.0),
+        ("Mars", 1.5),
+    ]);
+
+    solar_distance
+        .iter()
+        .for_each(|(k, v)| println!("key: {k}, value:{v}"));
+    let _myvec = Vec::from([1, 2, 3, 4, 5]);
+
+    let field_name = String::from("Favorite color");
+    let field_value = String::from("Blue");
+    let map2 = HashMap::from([(&field_name, &field_value)]);
+    println!("field_name: {field_name}, field_value: {field_value}");
+    println!("map2: {map2:#?}");
+}
+
+pub fn hashmap_basic3() {
+    let mut scores = HashMap::from([("Blue", 10)]);
+    let mut value = scores.entry("Yellow").or_insert(10);
+    println!("value: {value}");
+    value = scores.entry("Yellow").or_insert(50);
+    println!("value: {value}");
+    println!("scores HashMap: {scores:#?}");
+    let mut hmap1 = HashMap::new();
+    "hello world is a wonderfull world"
+        .split_whitespace()
+        .for_each(|word| {
+            hmap1
+                .entry(word)
+                .and_modify(|counter| *counter += 1)
+                .or_insert(1);
+        });
+    println!("hmap1 with count: {hmap1:#?}");
+}
+
 fn main() {
     vector_1();
     vector_2();
@@ -102,4 +141,6 @@ fn main() {
     basic_strings();
     string_get();
     hashmap_basic1();
+    hashmap_basic2();
+    hashmap_basic3();
 }
