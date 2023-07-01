@@ -1,3 +1,5 @@
+use std::{collections::HashMap, default::Default};
+
 pub fn vector_1() {
     let v = vec![1, 2, 3, 4];
     let third_element = &v[2];
@@ -81,6 +83,16 @@ pub fn string_get() {
     "Зд".chars().for_each(|elem| println!("{elem}"));
 }
 
+pub fn hashmap_basic1() {
+    let mut scores = HashMap::new();
+    scores.insert("Blue", 10);
+    let default_val = Default::default();
+    let value = scores.get("Blue").unwrap_or(&default_val);
+    let value2 = scores.get("Blue").copied().unwrap_or(default_val);
+    println!("value: {}", value);
+    println!("value2: {value2}");
+}
+
 fn main() {
     vector_1();
     vector_2();
@@ -89,4 +101,5 @@ fn main() {
     vector_with_enum();
     basic_strings();
     string_get();
+    hashmap_basic1();
 }
