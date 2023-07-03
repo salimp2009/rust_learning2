@@ -1,4 +1,6 @@
 use std::{marker::PhantomPinned, pin::Pin};
+
+use futures::Future;
 // using Pinning to the heap
 /*
 * Pinning an !Unpin type to the heap gives our data a stable address
@@ -39,23 +41,34 @@ impl Test2 {
     }
 }
 
+pub fn execute_unpin_feature(x: impl Future<Output = ()> + Unpin) {
+    println!("executing unpin feature");
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
 
     #[test]
     fn test_1() {
-        let test1 = Test2::new("test1");
-        let test2 = Test2::new("test2");
+        let mut test1 = Test2::new("test1");
+        let mut test2 = Test2::new("test2");
         println!(
             "test1; a: {}, b:{}",
             test1.as_ref().get_a(),
             test1.as_ref().get_a(),
         );
+        std::mem::swap(&mut test1, &mut test2);
+        // std::mem::swap(&mut test1, &mut test2);
         println!(
             "test2; a: {}, b:{}",
             test2.as_ref().get_a(),
             test2.as_ref().get_a(),
+        );
+        println!(
+            "test1; a: {}, b:{}",
+            test1.as_ref().get_a(),
+            test1.as_ref().get_a(),
         );
     }
 }
