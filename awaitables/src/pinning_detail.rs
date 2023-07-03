@@ -1,5 +1,5 @@
 use std::{marker::PhantomPinned, pin::Pin};
-
+// using Pinning to the stack
 #[derive(Debug)]
 pub struct Test {
     a: String,
