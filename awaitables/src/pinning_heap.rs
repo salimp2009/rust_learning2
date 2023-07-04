@@ -41,8 +41,24 @@ impl Test2 {
     }
 }
 
-pub fn execute_unpin_feature(x: impl Future<Output = ()> + Unpin) {
+pub fn execute_unpin_feature(_x: impl Future<Output = ()> + Unpin) {
     println!("executing unpin feature");
+}
+
+pub fn use_unpins() {
+    // use pin_utils::pin_mut;
+
+    let fut = async {
+        println!("printing from a future!");
+    };
+    let fut = Box::pin(fut);
+    execute_unpin_feature(fut);
+
+    let fut = async {
+        println!("printing future using pin_utils!");
+    };
+    pin_utils::pin_mut!(fut);
+    execute_unpin_feature(fut);
 }
 
 #[cfg(test)]
@@ -70,5 +86,10 @@ mod test {
             test1.as_ref().get_a(),
             test1.as_ref().get_a(),
         );
+    }
+
+    #[test]
+    fn test2() {
+        use_unpins();
     }
 }
