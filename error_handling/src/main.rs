@@ -14,6 +14,19 @@ pub fn recoverables_err1() {
     };
 }
 
+pub fn recoverables_err2() {
+    let _greeting_file = std::fs::File::open("./src/hello2.txt").unwrap_or_else(|error| {
+        if error.kind() == ErrorKind::NotFound {
+            File::create("./src/hello2.txt").unwrap_or_else(|err| {
+                panic!("Cannot create file: {:#?}", err);
+            })
+        } else {
+            panic!("Error openning file : {:#?}", error);
+        }
+    });
+}
+
 fn main() {
     recoverables_err1();
+    recoverables_err2();
 }
