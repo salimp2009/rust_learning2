@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::ErrorKind;
+use std::io::{self, ErrorKind, Read};
 pub fn recoverables_err1() {
     let greeting_file_result = std::fs::File::open("./src/hello.txt");
     let _greeting_file = match greeting_file_result {
@@ -26,7 +26,25 @@ pub fn recoverables_err2() {
     });
 }
 
+pub fn read_user_name_frm_file() -> Result<String, io::Error> {
+    let user_name_file_result = File::open("./src/hello.txt");
+
+    let mut user_name_file = match user_name_file_result {
+        Ok(file) => file,
+        Err(e) => return Err(e),
+    };
+
+    let mut username = String::new();
+
+    match user_name_file.read_to_string(&mut username) {
+        Ok(_) => Ok(username),
+        Err(e) => Err(e),
+    }
+}
+
 fn main() {
     recoverables_err1();
     recoverables_err2();
+    let username = read_user_name_frm_file().unwrap_or("Error".to_string());
+    println!("username: {username}",);
 }
