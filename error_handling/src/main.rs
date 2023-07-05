@@ -1,3 +1,4 @@
+use std::error::Error;
 use std::fs::File;
 use std::io::{self, ErrorKind, Read};
 pub fn recoverables_err1() {
@@ -42,9 +43,25 @@ pub fn read_user_name_frm_file() -> Result<String, io::Error> {
     }
 }
 
-fn main() {
+pub fn read_user_name_frm_file_short() -> Result<String, io::Error> {
+    let mut user_name_file = File::open("./src/hello.txt")?;
+    let mut username = String::new();
+
+    user_name_file.read_to_string(&mut username)?;
+    Ok(username)
+}
+
+pub fn last_char_of_firstline(text: &str) -> Option<char> {
+    text.lines().next()?.chars().last()
+}
+fn main() -> Result<(), Box<dyn Error>> {
     recoverables_err1();
     recoverables_err2();
     let username = read_user_name_frm_file().unwrap_or("Error".to_string());
     println!("username: {username}",);
+    let last_char =
+        last_char_of_firstline("this is cool\nIlike it\n").unwrap_or(Default::default());
+    println!("last char: {last_char}");
+    let _greeting_file = File::open("./src/hello.txt")?;
+    Ok(())
 }
