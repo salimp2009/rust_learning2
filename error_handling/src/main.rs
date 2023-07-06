@@ -1,6 +1,8 @@
 use std::error::Error;
 use std::fs::File;
 use std::io::{self, ErrorKind, Read};
+use std::net::IpAddr;
+
 pub fn recoverables_err1() {
     let greeting_file_result = std::fs::File::open("./src/hello.txt");
     let _greeting_file = match greeting_file_result {
@@ -54,11 +56,44 @@ pub fn read_user_name_frm_file_short() -> Result<String, io::Error> {
 pub fn last_char_of_firstline(text: &str) -> Option<char> {
     text.lines().next()?.chars().last()
 }
+
+pub fn error_info() {
+    let home = "127.0.0.1"
+        .parse::<IpAddr>()
+        .expect("Hardcoded IP address must be valid");
+    println!("IpAddress: {home}");
+}
+
+pub struct Guess {
+    value: i32,
+}
+
+impl Guess {
+    pub fn new(value: i32) -> Self {
+        // assert!(
+        //     (1..=100).contains(&value),
+        //     "Guess value must be between 1 and 100 got {}",
+        //     value
+        // );
+        if (1..=100).contains(&value) {
+            panic!("Expected a value between 1 and 100. got {}", value);
+        }
+        Guess { value }
+    }
+
+    pub fn value(&self) -> i32 {
+        self.value
+    }
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     recoverables_err1();
     recoverables_err2();
     let username = read_user_name_frm_file().unwrap_or("Error".to_string());
     println!("username: {username}",);
+
+    error_info();
+
     let last_char =
         last_char_of_firstline("this is cool\nIlike it\n").unwrap_or(Default::default());
     println!("last char: {last_char}");
