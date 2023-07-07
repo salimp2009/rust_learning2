@@ -1,9 +1,16 @@
 use std::fmt::Debug;
-pub fn largest_num<T>(collection: &[T])
+pub fn largest_num<T>(list: &[T]) -> T
 where
-    T: Debug,
+    T: Copy + Debug + PartialOrd + PartialEq,
 {
-    println!("collection received: {:#?}", collection);
+    let mut largest = &list[0];
+    list.iter().for_each(|value| {
+        if value > largest {
+            largest = value;
+        }
+    });
+    println!("collection received: {:#?}", largest);
+    *largest
 }
 fn main() {
     let my_vec = vec![1, 2, 3, 4];
