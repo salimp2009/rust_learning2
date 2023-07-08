@@ -13,10 +13,30 @@ where
     largest
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub struct Point<T, U> {
     x: T,
     y: U,
+}
+
+impl<T, U> Point<T, U> {
+    pub fn new(x: T, y: U) -> Self {
+        Point { x, y }
+    }
+
+    pub fn get_x(&self) -> &T {
+        &self.x
+    }
+
+    pub fn get_y(&self) -> &U {
+        &self.y
+    }
+}
+
+impl Point<f32, f32> {
+    pub fn distance_from_origin(&self) -> f32 {
+        (self.x.powi(2) + self.y.powi(2)).sqrt()
+    }
 }
 
 fn main() {
@@ -27,4 +47,5 @@ fn main() {
     largest_any(&char_vec);
     let point1 = Point { x: 5, y: 15.6 };
     println!("point1: {point1:?},\nx: {}, y:{}", point1.x, point1.y);
+    println!("point.x :{}", point1.get_x());
 }
