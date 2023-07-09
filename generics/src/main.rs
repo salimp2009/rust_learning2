@@ -31,6 +31,13 @@ impl<T, U> Point<T, U> {
     pub fn get_y(&self) -> &U {
         &self.y
     }
+
+    pub fn mix_up<T2, U2>(self, other: Point<T2, U2>) -> Point<T, U2> {
+        Point {
+            x: self.x,
+            y: other.y,
+        }
+    }
 }
 
 impl Point<f32, f32> {
@@ -47,5 +54,9 @@ fn main() {
     largest_any(&char_vec);
     let point1 = Point { x: 5, y: 15.6 };
     println!("point1: {point1:?},\nx: {}, y:{}", point1.x, point1.y);
-    println!("point.x :{}", point1.get_x());
+    println!("point1.x :{}", point1.get_x());
+
+    let point2 = point1.mix_up(Point { x: "Hello", y: 'c' });
+    println!("point2: {point2:?},");
+    println!("point1: {point1:?},");
 }
