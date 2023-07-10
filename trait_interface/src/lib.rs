@@ -1,5 +1,7 @@
 pub trait Summary {
-    fn summarize(&self) -> String;
+    fn summarize(&self) -> String {
+        String::from("(Read more ...)")
+    }
 }
 
 #[derive(Debug)]
@@ -11,9 +13,9 @@ pub struct NewsArticle {
 }
 
 impl Summary for NewsArticle {
-    fn summarize(&self) -> String {
-        format!("{}, by {} ({})", self.headline, self.author, self.location)
-    }
+    // fn summarize(&self) -> String {
+    //     format!("{}, by {} ({})", self.headline, self.author, self.location)
+    // }
 }
 
 #[derive(Debug)]
@@ -43,5 +45,16 @@ mod tests {
             retweet: false,
         };
         println!("twitter1: {}", twitter1.summarize());
+    }
+
+    #[test]
+    fn test_2() {
+        let article = NewsArticle {
+            headline: "".to_string(),
+            location: "".to_string(),
+            author: "".to_string(),
+            content: "".to_string(),
+        };
+        println!("article: {}", article.summarize());
     }
 }
