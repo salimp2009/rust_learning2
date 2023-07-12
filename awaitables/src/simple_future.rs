@@ -7,7 +7,6 @@ pub trait SimpleFuture {
     type Output;
     fn poll(&mut self, wake: fn()) -> Pollm<Self::Output>;
 }
-
 pub enum Pollm<T> {
     Ready(T),
     Pending,
