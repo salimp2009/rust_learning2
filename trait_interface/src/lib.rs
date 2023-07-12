@@ -59,12 +59,37 @@ where
 {
 }
 
+// we can only return only one type we can't have a conditional
+// that has 2 different types because of the way we define return type
+// to be able use multiple types in conditionals our return type has to be
+// Box<dyn Trait> ; a trait object wrapped in a box
 pub fn factory_summarizable() -> impl Summary + Debug {
     Twitter {
         username: "suumer".to_string(),
         content: "".to_string(),
         reply: false,
         retweet: false,
+    }
+}
+
+pub struct Pair<T> {
+    pub x: T,
+    pub y: T,
+}
+
+impl<T> Pair<T> {
+    pub fn new(x: T, y: T) -> Self {
+        Self { x, y }
+    }
+}
+
+impl<T: Display + PartialOrd> Pair<T> {
+    pub fn cmp_display(&self) {
+        if self.x >= self.y {
+            println!("the largest member is x : {}", self.x);
+        } else {
+            println!("the largest member is y : {}", self.y);
+        }
     }
 }
 
