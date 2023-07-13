@@ -25,6 +25,16 @@ impl Summary for NewsArticle {
     // }
 }
 
+impl ToString for NewsArticle {
+    #[inline]
+    fn to_string(&self) -> String {
+        format!(
+            "NewsArticle: {}, {}, {}, {}",
+            self.content, self.headline, self.author, self.location
+        )
+    }
+}
+
 #[derive(Debug)]
 pub struct Twitter {
     pub username: String,
@@ -111,12 +121,13 @@ mod tests {
     #[test]
     fn test_2() {
         let article = NewsArticle {
-            headline: "".to_string(),
-            location: "".to_string(),
-            author: "".to_string(),
-            content: "".to_string(),
+            headline: "big news...".to_string(),
+            location: "world".to_string(),
+            author: "salitos".to_string(),
+            content: "scifi".to_string(),
         };
         println!("article: {}", article.summarize());
+        println!("{}", article.to_string());
     }
     #[test]
     fn test_3() {
