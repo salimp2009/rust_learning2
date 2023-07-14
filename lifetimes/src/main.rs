@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 pub fn longest<'a>(s1: &'a str, s2: &'a str) -> &'a str {
     if s1.len() > s2.len() {
         s1
@@ -27,6 +29,18 @@ pub fn struct_lifetimes() {
     let excerpt = ImportanteExcerpt { a: first_sentence };
 
     println!("first sentence from novel : {}", excerpt.a);
+}
+
+pub fn longest_with_an_announcement<'a, T>(x: &'a str, y: &'a str, ann: T) -> &'a str
+where
+    T: Display,
+{
+    println!("Big news : {ann}");
+    if x.len() > y.len() {
+        x
+    } else {
+        y
+    }
 }
 
 #[derive(Debug)]
