@@ -1,5 +1,6 @@
 use std::fmt::{Debug, Display};
 
+// dfgdf
 pub trait Summary {
     fn summarize_author(&self) -> String;
 

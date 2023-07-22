@@ -6,6 +6,7 @@ pub fn print_and_returns(a: i32) -> i32 {
     println!("I got the value {a}");
     a
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
