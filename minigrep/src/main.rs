@@ -1,12 +1,20 @@
 use std::{env, fs};
-fn main() {
-    let args = env::args().collect::<Vec<String>>();
+
+pub fn parse_config(args: &[String]) -> Config {
     let query = &args[1];
     let file_path = &args[2];
-    println!("Searching for '{query}' ");
-    println!("In file '{file_path}' ");
+    Config { query, file_path }
+}
 
-    let contents = fs::read_to_string(file_path)
+pub struct Config<'a> {
+    pub query: &'a str,
+    pub file_path: &'a str,
+}
+fn main() {
+    let args = env::args().collect::<Vec<String>>();
+    let config = parse_config(&args);
+
+    let contents = fs::read_to_string(config.file_path)
         .expect("File Read Error: either file does not exist or incorrect path!");
-    println!("With {query}:\n{contents}")
+    println!("With {}:\n{}", config.query, contents)
 }
