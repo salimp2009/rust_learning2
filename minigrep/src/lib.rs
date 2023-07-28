@@ -30,3 +30,24 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     println!("With {}:\n{}", config.query, contents);
     Ok(())
 }
+pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+    contents
+        .lines()
+        .filter(|&line| line.contains(query))
+        .collect::<Vec<&str>>()
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn failing_test1() {
+        let query = "duct";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.";
+        let test_text = vec!["safe, fast, productive."];
+        assert_eq!(test_text, search(query, contents));
+    }
+}
