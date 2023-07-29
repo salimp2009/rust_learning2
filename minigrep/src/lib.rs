@@ -27,7 +27,10 @@ impl<'a> Config<'a> {
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(config.file_path)?;
-    println!("With {}:\n{}", config.query, contents);
+    search(&config.query, &contents)
+        .iter()
+        .for_each(|line| println!("{line}"));
+    // println!("With {}:\n{}", config.query, contents);
     Ok(())
 }
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
