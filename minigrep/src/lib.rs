@@ -1,9 +1,9 @@
-use std::{error::Error, fs};
+use std::{env, error::Error, fs};
 
 pub fn parse_config(args: &[String]) -> Config {
     let query = args[1].as_str();
     let file_path = args[2].as_str();
-    let ignore_case = false;
+    let ignore_case = env::var("IGNORE_CASE").is_ok();
     Config {
         query,
         file_path,
@@ -27,7 +27,7 @@ impl<'a> Config<'a> {
 
         let query = args[1].as_str();
         let file_path = args[2].as_str();
-        let ignore_case = false;
+        let ignore_case = env::var("IGNORE_CASE").is_ok();
         Ok(Config {
             query,
             file_path,
@@ -38,10 +38,16 @@ impl<'a> Config<'a> {
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(config.file_path)?;
-    search(config.query, &contents)
-        .iter()
-        .for_each(|line| println!("{line}"));
-    // println!("With {}:\n{}", config.query, contents);
+    if config.ignore_case {
+        search_case_insensitive(config.query, &contents)
+            .iter()
+            .for_each(|line| println!("{line}"));
+    } else {
+        search(config.query, &contents)
+            .iter()
+            .for_each(|line| println!("{line}"));
+    }
+
     Ok(())
 }
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
@@ -84,4 +90,10 @@ Trust me.";
         let test_text = vec!["Rust:", "Trust me."];
         assert_eq!(test_text, search_case_insensitive(query, contents));
     }
+
+    // #[test]
+    // fn path_test(){
+    //     let path = env::
+    //
+    // }
 }
