@@ -1,3 +1,7 @@
+use tshirt_co::inventory::{self, ShirtColor};
+
 fn main() {
-    println!("Hello, world!");
+    let store = inventory::Inventory {
+        shirts: vec![ShirtColor::Red, ShirtColor::Blue],
+    };
 }

@@ -1,1 +1,1 @@
-mod inventory;
+pub mod inventory;
