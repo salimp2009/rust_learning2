@@ -2,6 +2,22 @@ use std::{thread, time::Duration};
 
 use tshirt_co::inventory::{self, ShirtColor};
 
+#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+pub fn closures_capture_byref() {
+    let list = vec![1, 2, 3];
+    println!("Before the closure {:?}", list);
+
+    let only_borrows = || println!("inside the closure {:?}", list);
+    println!("Before calling the closure {:?}", list);
+    only_borrows();
+    println!("After calling the closure {:?}", list);
+}
+
 fn main() {
     let store = inventory::Inventory {
         shirts: vec![ShirtColor::Blue, ShirtColor::Red, ShirtColor::Blue],
@@ -27,7 +43,30 @@ fn main() {
     };
 
     let example_closure = |x| x;
-    let s = example_closure("hello".to_string());
+    let _s = example_closure("hello".to_string());
     // this wont work since the type for input in closure is set to String in above code
     // let n = example_closure(5);
+
+    let mut list_rectangles = [
+        Rectangle {
+            width: 10,
+            height: 1,
+        },
+        Rectangle {
+            width: 3,
+            height: 5,
+        },
+        Rectangle {
+            width: 7,
+            height: 12,
+        },
+    ];
+    let mut num_sort_operations = 0;
+
+    list_rectangles.sort_by_cached_key(|elem| {
+        num_sort_operations += 1;
+        elem.width
+    });
+    println!("{:?} sorted in {num_sort_operations}", list_rectangles);
+    closures_capture_byref();
 }
