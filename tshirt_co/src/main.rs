@@ -18,6 +18,17 @@ pub fn closures_capture_byref() {
     println!("After calling the closure {:?}", list);
 }
 
+pub fn closure_with_move() {
+    let list = vec![1, 2, 3];
+    println!("Before the closure_moves {:?}", list);
+
+    thread::spawn(move || println!("inside the closure_moves {:?}", list))
+        .join()
+        .unwrap();
+    // list is moved therefore illegal borrow below
+    // println!("after move {:?}", list);
+}
+
 fn main() {
     let store = inventory::Inventory {
         shirts: vec![ShirtColor::Blue, ShirtColor::Red, ShirtColor::Blue],
@@ -69,4 +80,5 @@ fn main() {
     });
     println!("{:?} sorted in {num_sort_operations}", list_rectangles);
     closures_capture_byref();
+    closure_with_move();
 }
