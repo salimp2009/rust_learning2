@@ -3,7 +3,23 @@ pub enum ShirtColor {
     Red,
     Blue,
 }
-
+/// Creates Inventory
+///
+/// # Examples
+/// ```
+///    use tshirt_co::inventory::{self, ShirtColor};
+///    let store = inventory::Inventory {
+///        shirts: vec![ShirtColor::Blue, ShirtColor::Red, ShirtColor::Blue],
+///    };
+///
+///    let user_pref1 = Some(ShirtColor::Red);
+///    let giveaway = store.giveaway(user_pref1);
+///    println!(
+///        "The user with preference {:?} gets {:?}",
+///        user_pref1.unwrap(),
+///        giveaway
+///    );
+/// ```
 #[derive(Debug, PartialEq)]
 pub struct Inventory {
     pub shirts: Vec<ShirtColor>,

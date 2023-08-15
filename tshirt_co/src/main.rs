@@ -11,7 +11,6 @@ struct Rectangle {
 pub fn closures_capture_byref() {
     let list = vec![1, 2, 3];
     println!("Before the closure {:?}", list);
-
     let only_borrows = || println!("inside the closure {:?}", list);
     println!("Before calling the closure {:?}", list);
     only_borrows();
