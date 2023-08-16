@@ -1,3 +1,5 @@
+/// Inventory for keeping track of tshirts & colors
+
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum ShirtColor {
     Red,
