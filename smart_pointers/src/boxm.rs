@@ -17,3 +17,9 @@ impl<T> Deref for Boxm<T> {
         &self.0
     }
 }
+
+impl<T> Drop for Boxm<T> {
+    fn drop(&mut self) {
+        println!("Dropping Boxm with type {:?}", std::any::type_name::<T>());
+    }
+}
