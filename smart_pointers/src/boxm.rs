@@ -1,4 +1,4 @@
-use std::ops::Deref;
+use std::{fmt::Debug, ops::Deref};
 
 #[derive(Debug)]
 pub struct Boxm<T>(T);
