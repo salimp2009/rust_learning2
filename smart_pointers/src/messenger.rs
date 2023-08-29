@@ -36,3 +36,29 @@ where
         }
     }
 }
+#[cfg(test)]
+mod test {
+    use std::cell::RefCell;
+
+    use super::*;
+    #[derive(Debug)]
+    struct MessengerService {
+        sent_messages: RefCell<Vec<String>>,
+    }
+
+    impl MessengerService {
+        fn new() -> Self {
+            MessengerService {
+                sent_messages: RefCell::new(vec![]),
+            }
+        }
+
+        // add code here
+    }
+
+    impl Messenger for MessengerService {
+        fn send(&self, message: &str) {
+            self.sent_messages.borrow_mut().push(message.to_string());
+        }
+    }
+}
