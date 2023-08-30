@@ -33,6 +33,7 @@ where
         } else if percentage_of_max >= 0.75 {
             self.messenger
                 .send("Warning: You've used %75 of your quoata!");
+            println!()
         }
     }
 }
@@ -60,5 +61,16 @@ mod test {
         fn send(&self, message: &str) {
             self.sent_messages.borrow_mut().push(message.to_string());
         }
+    }
+    #[test]
+    fn test_send_over_75percent() {
+        let messenger_service = MessengerService::new();
+        let mut limit_tracker = LimitTracker::new(&messenger_service, 100);
+        limit_tracker.set_value(80);
+        println!(
+            "messenger service: {:?}",
+            messenger_service.sent_messages.borrow().first().unwrap()
+        );
+        assert_eq!(messenger_service.sent_messages.borrow().len(), 1);
     }
 }
