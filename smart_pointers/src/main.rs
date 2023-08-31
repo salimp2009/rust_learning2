@@ -1,9 +1,11 @@
+use std::cell::RefCell;
 use std::rc::Rc;
 
 use smart_pointers::Boxm;
 
 use crate::List::{Cons, Nil};
 use crate::List2::{Cons2, Nil2};
+use crate::List3::{Cons3, Nil3};
 
 #[derive(Debug, Clone)]
 pub enum List {
@@ -14,6 +16,12 @@ pub enum List {
 pub enum List2 {
     Cons2(i32, Rc<List2>),
     Nil2,
+}
+
+#[derive(Debug, Clone)]
+pub enum List3 {
+    Cons3(Rc<RefCell<i32>>, Rc<List3>),
+    Nil3,
 }
 
 pub fn reference_pointers() {
@@ -73,6 +81,19 @@ pub fn list_sharedptr() {
     println!("c: {:?}", c);
 }
 
+pub fn refcount_refcel() {
+    let value = Rc::new(RefCell::new(5));
+    let a = Rc::new(Cons3(Rc::clone(&value), Rc::new(Nil3)));
+
+    let b = Cons3(Rc::new(RefCell::new(3)), Rc::clone(&a));
+    let c = Cons3(Rc::new(RefCell::new(4)), Rc::clone(&a));
+    *value.borrow_mut() += 10;
+    println!("value: {:?}", *value.borrow());
+    println!("a : {:?}", *a);
+    println!("b : {:?}", b);
+    println!("c : {:?}", c);
+}
+
 fn main() {
     let list = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
     println!("list: {:#?}", list);
@@ -81,4 +102,5 @@ fn main() {
     use_print_name();
     drop_early();
     list_sharedptr();
+    refcount_refcel();
 }
