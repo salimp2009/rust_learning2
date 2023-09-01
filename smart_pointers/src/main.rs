@@ -6,6 +6,7 @@ use smart_pointers::Boxm;
 use crate::List::{Cons, Nil};
 use crate::List2::{Cons2, Nil2};
 use crate::List3::{Cons3, Nil3};
+use crate::List4::{Cons4, Nil4};
 
 #[derive(Debug, Clone)]
 pub enum List {
@@ -22,6 +23,21 @@ pub enum List2 {
 pub enum List3 {
     Cons3(Rc<RefCell<i32>>, Rc<List3>),
     Nil3,
+}
+
+#[derive(Debug, Clone)]
+pub enum List4 {
+    Cons4(i32, RefCell<Rc<List4>>),
+    Nil4,
+}
+
+impl List4 {
+    fn tail(&self) -> Option<&RefCell<Rc<List4>>> {
+        match self {
+            Cons4(_, item) => Some(item),
+            Nil4 => None,
+        }
+    }
 }
 
 pub fn reference_pointers() {
