@@ -1,7 +1,6 @@
+use smart_pointers::Boxm;
 use std::cell::RefCell;
 use std::rc::Rc;
-
-use smart_pointers::Boxm;
 
 use crate::List::{Cons, Nil};
 use crate::List2::{Cons2, Nil2};
@@ -38,6 +37,26 @@ impl List4 {
             Nil4 => None,
         }
     }
+}
+
+pub fn memory_leak() {
+    let a = Rc::new(Cons4(5, RefCell::new(Rc::new(Nil4))));
+    println!("a initial rc count {}", Rc::strong_count(&a));
+    println!("a next item(tail)  {:?}", a.tail());
+
+    let b = Rc::new(Cons4(10, RefCell::new(Rc::clone(&a))));
+    println!("a rc count after b created: {}", Rc::strong_count(&a));
+    println!("b initial rc count {}", Rc::strong_count(&b));
+    println!("b next item(tail)  {:?}", b.tail());
+
+    if let Some(link) = a.tail() {
+        *link.borrow_mut() = Rc::clone(&b);
+    }
+    println!("b rc count  after changing a {}", Rc::strong_count(&b));
+    println!("a rc count  after changing a {}", Rc::strong_count(&a));
+    // Uncomment the next line to see that we have a cycle;
+    // it will overflow the stack
+    // println!("a next item = {:?}", a.tail());
 }
 
 pub fn reference_pointers() {
@@ -119,4 +138,5 @@ fn main() {
     drop_early();
     list_sharedptr();
     refcount_refcel();
+    memory_leak();
 }
