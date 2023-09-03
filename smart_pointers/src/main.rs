@@ -129,6 +129,26 @@ pub fn refcount_refcel() {
     println!("c : {:?}", c);
 }
 
+#[derive(Debug, PartialEq)]
+struct Node {
+    value: i32,
+    children: RefCell<Vec<Rc<Node>>>,
+}
+
+pub fn weak_pointers() {
+    let leaf = Rc::new(Node {
+        value: 3,
+        children: RefCell::new(vec![]),
+    });
+
+    let branch = Rc::new(Node {
+        value: 5,
+        children: RefCell::new(vec![Rc::clone(&leaf)]),
+    });
+
+    println!("leaf count: {}", Rc::strong_count(&leaf));
+}
+
 fn main() {
     let list = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
     println!("list: {:#?}", list);
@@ -139,4 +159,5 @@ fn main() {
     list_sharedptr();
     refcount_refcel();
     memory_leak();
+    weak_pointers();
 }
