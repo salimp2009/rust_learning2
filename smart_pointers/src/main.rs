@@ -42,7 +42,8 @@ impl List4 {
 pub fn memory_leak() {
     let a = Rc::new(Cons4(5, RefCell::new(Rc::new(Nil4))));
     println!("a initial rc count {}", Rc::strong_count(&a));
-    println!("a next item(tail)  {:?}", a.tail());
+    println!("a next item(tail)  {:?}", &a.tail());
+    println!("the list a:  {:?}", a);
 
     let b = Rc::new(Cons4(10, RefCell::new(Rc::clone(&a))));
     println!("a rc count after b created: {}", Rc::strong_count(&a));
@@ -143,16 +144,36 @@ pub fn weak_pointers() {
         children: RefCell::new(vec![]),
     });
 
-    let branch = Rc::new(Node {
-        value: 5,
-        parent: RefCell::new(Weak::new()),
-        children: RefCell::new(vec![Rc::clone(&leaf)]),
-    });
+    println!("leaf strong :{:?}", Rc::strong_count(&leaf));
+    println!("leaf weak :{:?}", Rc::weak_count(&leaf));
 
-    *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
+    {
+        let branch = Rc::new(Node {
+            value: 5,
+            parent: RefCell::new(Weak::new()),
+            children: RefCell::new(vec![Rc::clone(&leaf)]),
+        });
+        println!("leaf parent: {:?}", leaf.parent.borrow().upgrade());
 
-    println!("leaf count: {}", Rc::strong_count(&leaf));
-    println!("leaf parent: {:?}", leaf.parent.borrow().upgrade());
+        *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
+        println!(
+            "branch strong :{:?}, branch weak: {:?}",
+            Rc::strong_count(&branch),
+            Rc::weak_count(&branch)
+        );
+        println!("leaf strong :{:?}", Rc::strong_count(&leaf));
+        println!("leaf weak :{:?}", Rc::weak_count(&leaf));
+
+        println!("leaf count: {}", Rc::strong_count(&leaf));
+        println!("leaf parent: {:?}", leaf.parent.borrow().upgrade());
+    }
+
+    println!("after inner leaf strong :{:?}", Rc::strong_count(&leaf));
+    println!("after inner leaf weak :{:?}", Rc::weak_count(&leaf));
+    println!(
+        "after inner leaf parent: {:?}",
+        leaf.parent.borrow().upgrade()
+    );
 }
 
 fn main() {
