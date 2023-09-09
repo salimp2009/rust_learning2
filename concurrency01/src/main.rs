@@ -1,4 +1,5 @@
-use std::{thread, time::Duration};
+use std::{error::Error, sync::mpsc, sync::mpsc::SendError, thread, time::Duration};
+
 pub fn thread_handle() {
     let handle = thread::spawn(|| {
         (1..10).for_each(|num| {
@@ -45,7 +46,22 @@ pub fn thread_spawn() {
         thread::sleep(Duration::from_millis(5));
     });
 }
-fn main() {
+pub fn channels_basics() -> Result<(), Box<dyn Error>> {
+    let (tx, rx) = mpsc::channel();
+    thread::spawn(move || -> Result<(), SendError<String>> {
+        let value = String::from("hi channels");
+        println!("sending channel data: {}", value);
+        tx.send(value)?;
+        Ok(())
+    });
+    let received = rx.recv()?;
+    println!("receiver channel got: {}", received);
+    Ok(())
+}
+
+fn main() -> Result<(), Box<dyn Error>> {
     thread_handle();
     // thread_spawn();
+    channels_basics()?;
+    Ok(())
 }
