@@ -59,9 +59,53 @@ pub fn channels_basics() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+pub fn channels_multimesg() {
+    let (tx, rx) = mpsc::channel();
+    thread::spawn(move || {
+        // let vals = vec![
+        //     String::from("hi"),
+        //     String::from("from"),
+        //     String::from("the"),
+        //     String::from("thread"),
+        // ];
+
+        for val in (["hi", "from", "the", "thread"]).iter() {
+            tx.send(val).unwrap();
+            thread::sleep(Duration::from_secs(1));
+        }
+    });
+
+    for received in rx.iter() {
+        println!("received : {}", received);
+    }
+}
+pub fn channels_multiproducer() {
+    let (tx, rx) = mpsc::channel();
+    let tx2 = tx.clone();
+    thread::spawn(move || {
+        for val in (["hi", "from", "the", "thread"]).iter() {
+            tx.send(val).unwrap();
+            thread::sleep(Duration::from_secs(1));
+        }
+    });
+
+    thread::spawn(move || {
+        for val in (["more", "messages", "Dido", "Semos"]).iter() {
+            tx2.send(val).unwrap();
+            thread::sleep(Duration::from_secs(1));
+        }
+    });
+
+    for received in rx.iter() {
+        println!("received : {}", received);
+    }
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
-    thread_handle();
+    // thread_handle();
     // thread_spawn();
-    channels_basics()?;
+    // channels_basics()?;
+    // channels_multimesg();
+    channels_multiproducer();
     Ok(())
 }
