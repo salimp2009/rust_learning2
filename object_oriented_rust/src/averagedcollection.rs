@@ -9,7 +9,6 @@ impl AveragedCollection {
     pub fn add(&mut self, value: i32) {
         self.list.push(value);
     }
-    // add code here
     pub fn remove(&mut self) -> Option<i32> {
         if let Some(result) = self.list.pop() {
             self.update_average();
