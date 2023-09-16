@@ -1,2 +1,2 @@
 pub mod averagedcollection;
-pub mod inheritance;
+pub mod gui;
