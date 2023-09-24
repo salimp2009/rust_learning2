@@ -18,6 +18,29 @@ pub fn iflet_pattern() {
         println!("Using purple as background color");
     }
 }
+
+pub fn while_let_conditionals() {
+    let mut stack = vec![1, 2, 3];
+    while let Some(top) = stack.pop() {
+        println!("top: {}", top);
+    }
+    assert_eq!(stack.len(), 0);
+    println!("stack after pop {:?}", stack);
+}
+
+pub fn iterators_ranges() {
+    ('a'..'d').enumerate().for_each(|(i, val)| {
+        println!("index: {i}, value: {val}");
+    });
+}
+pub fn print_2d_coordinates(&(x, y): &(i32, i32)) {
+    println!("x: {}, y: {}", x, y);
+}
+
 fn main() {
     iflet_pattern();
+    while_let_conditionals();
+    iterators_ranges();
+    let point = (2, 3);
+    print_2d_coordinates(&point);
 }
