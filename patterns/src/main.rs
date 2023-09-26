@@ -37,10 +37,89 @@ pub fn print_2d_coordinates(&(x, y): &(i32, i32)) {
     println!("x: {}, y: {}", x, y);
 }
 
+pub fn match_with_or() {
+    let x: u32 = 7;
+    let y = 'b';
+    match x {
+        1 | 2 => println!("1 or 2"),
+        5 | 6 => println!("5 or 6"),
+        7..=9 => println!("7 thru 9"),
+        _ => println!(" greater than 6 or smaller than 1"),
+    }
+    match y {
+        'a' => println!("a"),
+        'b'..='d' => println!("b thru d"),
+        _ => println!("anything other than a thru d"),
+    }
+}
+
+pub fn ignore_values_partially() {
+    let mut settings = Some(5);
+    let new_settings = Some(10);
+
+    match (settings, new_settings) {
+        (Some(_), Some(_)) => println!("cant overwrite settings"),
+        _ => {
+            settings = new_settings;
+        }
+    }
+    println!("setting is {:?}", settings);
+}
+
+pub struct Point {
+    pub x: i32,
+    pub y: i32,
+}
+
+pub fn destructuring() {
+    let p = Point { x: 0, y: 7 };
+    match p {
+        Point { x, y: 0 } => println!("x: {}", x),
+        Point { x: 0, y } => println!("y: {}", y),
+        Point { x, y } => println!("x: {}, y: {}", x, y),
+    }
+}
+
+enum Color {
+    Rgb(i32, i32, i32),
+    Hsv(i32, i32, i32),
+}
+
+enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(Color),
+}
+pub fn destructuring_enums() {
+    let msg = Message::ChangeColor(Color::Hsv(0, 160, 255));
+    match msg {
+        Message::ChangeColor(Color::Rgb(r, g, b)) => println!("r: {r}, g: {g}, b: {b}"),
+        Message::ChangeColor(Color::Hsv(h, s, v)) => println!("h:{h}, s:{s}, v:{v} "),
+        _ => (),
+    }
+}
+
+struct Point2 {
+    x: i32,
+    y: i32,
+    z: i32,
+}
+pub fn ignoring_multiple_values() {
+    let p = Point2 { x: 0, y: 0, z: 5 };
+    let Point2 { x, .. } = p;
+    println!("Point2 x: {x}");
+}
+
 fn main() {
     iflet_pattern();
     while_let_conditionals();
     iterators_ranges();
     let point = (2, 3);
     print_2d_coordinates(&point);
+    match_with_or();
+    ignore_values_partially();
+    destructuring();
+    destructuring_enums();
+    ignoring_multiple_values();
 }
