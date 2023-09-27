@@ -111,6 +111,30 @@ pub fn ignoring_multiple_values() {
     println!("Point2 x: {x}");
 }
 
+pub fn matchguard_with_conditionals() {
+    let num = Some(4);
+    let y = true;
+    match num {
+        Some(x) if x % 2 == 0 => println!("The number is {} even", x),
+        Some(x) if y => println!("The number is {} odd", x),
+        None => (),
+        _ => (),
+    }
+}
+enum Message2 {
+    Hello { id: i32 },
+}
+pub fn match_bindings() {
+    let msg = Message2::Hello { id: 5 };
+
+    match msg {
+        Message2::Hello { id: id_var @ 3..=7 } => println!("Found id in range {}", id_var),
+        Message2::Hello { id: 10..=12 } => {
+            println!("Found an id in another range")
+        }
+        Message2::Hello { id } => println!("Found some other id {}", id),
+    }
+}
 fn main() {
     iflet_pattern();
     while_let_conditionals();
@@ -122,4 +146,6 @@ fn main() {
     destructuring();
     destructuring_enums();
     ignoring_multiple_values();
+    matchguard_with_conditionals();
+    match_bindings();
 }
