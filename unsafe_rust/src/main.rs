@@ -25,6 +25,26 @@ pub fn split_at_mut(values: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) 
     }
 }
 
+pub fn unsafe_fuction_method() {
+    let mut val = vec![1, 2, 4, 5, 6];
+
+    let (a, b) = val.split_at_mut(3);
+    println!("a: {:?}, b: {:?}", a, b);
+
+    let (aa, bb) = split_at_mut(&mut val, 3);
+    println!("aa: {:?}, bb: {:?}", aa, bb);
+}
+
+pub fn ffi_functions() {
+    extern "C" {
+        fn abs(input: i32) -> i32;
+    }
+
+    unsafe {
+        println!(" absulute value of -3 in C {}", abs(-3));
+    }
+}
+
 fn main() {
     let mut num = 5;
     let r1 = &num as *const i32;
@@ -47,4 +67,6 @@ fn main() {
         println!("r2: {:?}", *r2);
     }
     // unsafe { arbitrary_memory() };
+    unsafe_fuction_method();
+    ffi_functions();
 }
