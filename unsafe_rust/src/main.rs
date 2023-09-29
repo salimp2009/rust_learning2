@@ -41,7 +41,21 @@ pub fn ffi_functions() {
     }
 
     unsafe {
-        println!(" absulute value of -3 in C {}", abs(-3));
+        println!("absulute value of -3 in C {}", abs(-3));
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn call_from_c() {
+    println!("Just called a Rust function from C!");
+}
+
+pub fn mutable_static_variable() {
+    static mut COUNTER: u32 = 0;
+    let add_to_count = |inc: u32| unsafe { COUNTER += inc };
+    add_to_count(2);
+    unsafe {
+        println!("COUNTER {}", COUNTER);
     }
 }
 
@@ -69,4 +83,6 @@ fn main() {
     // unsafe { arbitrary_memory() };
     unsafe_fuction_method();
     ffi_functions();
+    mutable_static_variable();
+    mutable_static_variable();
 }
