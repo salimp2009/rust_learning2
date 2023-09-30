@@ -45,6 +45,19 @@ pub fn ffi_functions() {
     }
 }
 
+pub fn union_access_unsafe() {
+    union IntorFloat {
+        i: u32,
+        f: f32,
+    }
+
+    let mut u = IntorFloat { f: 1.0 };
+    assert_eq!(unsafe { u.i }, 1065353216);
+
+    u.i = 2;
+    println!("u.f: {}", unsafe { u.f });
+}
+
 #[no_mangle]
 pub extern "C" fn call_from_c() {
     println!("Just called a Rust function from C!");
@@ -85,4 +98,5 @@ fn main() {
     ffi_functions();
     mutable_static_variable();
     mutable_static_variable();
+    union_access_unsafe();
 }
