@@ -122,6 +122,12 @@ fn long_type_return() -> Thunk {
     Box::new(|| println!(" long type return"))
 }
 
+// Never type !
+fn bar() -> ! {
+    println!("testing Never type");
+    loop {}
+}
+
 fn main() {
     assert_eq!(
         Point { x: 1, y: 0 } + Point { x: 2, y: 3 },
