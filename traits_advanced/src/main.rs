@@ -110,6 +110,17 @@ impl DerefMut for VecString {
         &mut self.0
     }
 }
+// type aliases
+type Kilometers = i32;
+type Thunk = Box<dyn Fn() + Send + 'static>;
+
+fn long_type_input(f: Thunk) {
+    println!("long type input: {:?}", f());
+}
+
+fn long_type_return() -> Thunk {
+    Box::new(|| println!(" long type return"))
+}
 
 fn main() {
     assert_eq!(
@@ -129,4 +140,9 @@ fn main() {
     let w = VecString(vec!["yoow".to_string(), "cool".to_string()]);
     println!("VecString w= {}", w);
     w.iter().for_each(|elem| println!("elem: {}", elem));
+
+    let x: i32 = 5;
+    let y: Kilometers = 10;
+    println!("x + y : {}", x + y);
+    long_type_input(long_type_return());
 }
