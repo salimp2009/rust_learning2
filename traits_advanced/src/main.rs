@@ -123,9 +123,21 @@ fn long_type_return() -> Thunk {
 }
 
 // Never type !
+// Dont use this since it is a never ending loop; just for showing only
 fn bar() -> ! {
     println!("testing Never type");
     loop {}
+}
+
+#[derive(Debug)]
+enum Status {
+    Value(u32),
+    Stop,
+}
+
+fn closures_function_pointers() {
+    let list_of_statuses = (0u32..20).map(&Status::Value).collect::<Vec<_>>();
+    println!("list_of_statuses: {:?}", list_of_statuses);
 }
 
 fn main() {
@@ -151,4 +163,5 @@ fn main() {
     let y: Kilometers = 10;
     println!("x + y : {}", x + y);
     long_type_input(long_type_return());
+    closures_function_pointers();
 }
