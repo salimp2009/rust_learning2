@@ -124,12 +124,15 @@ fn long_type_return() -> Thunk {
 
 // Never type !
 // Dont use this since it is a never ending loop; just for showing only
+#[allow(dead_code)]
 fn bar() -> ! {
     println!("testing Never type");
+    #[allow(clippy::empty_loop)]
     loop {}
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 enum Status {
     Value(u32),
     Stop,
@@ -138,6 +141,10 @@ enum Status {
 fn closures_function_pointers() {
     let list_of_statuses = (0u32..20).map(&Status::Value).collect::<Vec<_>>();
     println!("list_of_statuses: {:?}", list_of_statuses);
+}
+
+fn return_closure() -> Box<dyn Fn(i32) -> i32> {
+    Box::new(|val: i32| val * 3)
 }
 
 fn main() {
@@ -164,4 +171,6 @@ fn main() {
     println!("x + y : {}", x + y);
     long_type_input(long_type_return());
     closures_function_pointers();
+    let final_value = return_closure()(5);
+    println!("final value: {}", final_value);
 }
