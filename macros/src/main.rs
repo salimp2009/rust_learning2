@@ -1,3 +1,4 @@
+// use hello_macro_derive;
 use macros::vecb;
 use macros::HelloMacro;
 
@@ -10,12 +11,15 @@ impl HelloMacro for Pancakes {
     }
 }
 
+#[derive(hello_macro_derive::HelloMacro)]
+struct Pancakes2 {}
+
 fn main() {
     let nums = vec![1, 2, 3, 4];
     println!("nums : {:?}", nums);
 
     let nums = vecb!(1, 2, 3, 4);
-    // let num3 = vecn!(1, 2, 3, 4, 5);
     println!("nums : {:?}", nums);
     Pancakes::hello_macro();
+    Pancakes2::hello_macro();
 }
