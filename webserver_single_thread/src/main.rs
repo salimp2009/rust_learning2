@@ -2,14 +2,24 @@ use std::{
     fs,
     io::{BufRead, BufReader, Write},
     net::{TcpListener, TcpStream},
+    thread,
+    time::Duration,
 };
 
 fn handle_connection(mut stream: TcpStream) -> std::io::Result<()> {
     let buf_reader = BufReader::new(&mut stream);
-    let request_line = buf_reader.lines().next().unwrap();
+    let request_line = buf_reader.lines().next().unwrap()?;
 
-    let (status_line, filename) = match request_line {
-        Ok(request) if request == "GET / HTTP/1.1" => ("HTTP/1.1 200 OK", "hello.html"),
+    let (status_line, filename) = match &request_line[..] {
+        "GET / HTTP/1.1" => {
+            println!("thread id:{:#?}", thread::current().id());
+            ("HTTP/1.1 200 OK", "hello.html")
+        }
+        "GET /sleep HTTP/1.1" => {
+            println!("thread id sleep: {:#?}", thread::current().id());
+            thread::sleep(Duration::from_secs(5));
+            ("HTTP/1.1 200 OK", "hello.html")
+        }
         _ => ("HTTP/1.1 404 NOT FOUND", "404.html"),
     };
 
@@ -38,13 +48,11 @@ fn handle_connection(mut stream: TcpStream) -> std::io::Result<()> {
 }
 
 fn main() -> std::io::Result<()> {
-    let _myvec: Vec<u8> = Vec::new();
-
     let listener = TcpListener::bind("127.0.0.1:7878")?;
 
     listener.incoming().for_each(|stream| {
         println!("connecting at: {:#?}", stream);
-        handle_connection(stream.unwrap()).unwrap()
+        std::thread::spawn(|| handle_connection(stream.unwrap()).unwrap());
     });
     // for stream in listener.incoming() {
     //     let stream = stream?;
