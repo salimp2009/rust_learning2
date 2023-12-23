@@ -6,6 +6,8 @@ use std::{
     time::Duration,
 };
 
+use webserver_single_thread::thread_pool::ThreadPool;
+
 fn handle_connection(mut stream: TcpStream) -> std::io::Result<()> {
     let buf_reader = BufReader::new(&mut stream);
     let request_line = buf_reader.lines().next().unwrap()?;
@@ -49,10 +51,12 @@ fn handle_connection(mut stream: TcpStream) -> std::io::Result<()> {
 
 fn main() -> std::io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:7878")?;
+    let pool = ThreadPool::new(4);
 
     listener.incoming().for_each(|stream| {
-        println!("connecting at: {:#?}", stream);
-        std::thread::spawn(|| handle_connection(stream.unwrap()).unwrap());
+        pool.execute(|| handle_connection(stream.unwrap()).unwrap());
+        // println!("connecting at: {:#?}", stream);
+        // std::thread::spawn(|| handle_connection(stream.unwrap()).unwrap());
     });
     // for stream in listener.incoming() {
     //     let stream = stream?;
