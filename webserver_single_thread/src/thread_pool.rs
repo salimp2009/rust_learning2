@@ -1,14 +1,24 @@
-use std::thread;
+use std::{
+    sync::mpsc,
+    thread::{self},
+};
 
+struct Job;
+
+#[allow(dead_code)]
 pub struct ThreadPool {
-    pub threads: Vec<thread::JoinHandle<()>>,
+    workers: Vec<Worker>,
+    sender: mpsc::Sender<Job>,
 }
 
 impl ThreadPool {
     pub fn new(size: usize) -> Self {
-        let mut threads = Vec::with_capacity(size);
+        assert!(size > 0);
+        let (sender, _receiver) = mpsc::channel();
+        let mut workers = Vec::with_capacity(size);
 
-        ThreadPool { threads }
+        (0..size).for_each(|id| workers.push(Worker::new(id)));
+        ThreadPool { workers, sender }
     }
 
     pub fn execute<F>(&self, f: F)
@@ -21,5 +31,20 @@ impl ThreadPool {
         // if count > 0 {
         //     std::thread::spawn(f);
         // }
+    }
+}
+
+#[allow(dead_code)]
+struct Worker {
+    id: usize,
+    thread: thread::JoinHandle<()>,
+}
+
+impl Worker {
+    fn new(id: usize) -> Self {
+        Worker {
+            id,
+            thread: thread::spawn(|| {}),
+        }
     }
 }
