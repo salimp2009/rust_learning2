@@ -53,7 +53,9 @@ fn main() -> std::io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:7878")?;
     let pool = ThreadPool::new(4);
 
-    listener.incoming().for_each(|stream| {
+    // after 2 incoming requests, the Threadpool will shutdown
+    // using Drop implementation
+    listener.incoming().take(2).for_each(|stream| {
         pool.execute(|| handle_connection(stream.unwrap()).unwrap());
         // println!("connecting at: {:#?}", stream);
         // std::thread::spawn(|| handle_connection(stream.unwrap()).unwrap());
