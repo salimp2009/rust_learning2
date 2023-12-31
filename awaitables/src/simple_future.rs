@@ -18,7 +18,7 @@ pub struct Socket {
 impl Socket {
     pub fn has_data_to_read(&self) -> bool {
         println!("data ready");
-        true
+        !self.data.is_empty()
     }
     pub fn set_readable_callback(&self, wake: fn()) {
         wake();
