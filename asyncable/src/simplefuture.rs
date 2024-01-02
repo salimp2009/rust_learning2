@@ -98,3 +98,26 @@ where
         }
     }
 }
+
+pub struct AndThen<FutureA, FutureB> {
+    first: Option<FutureA>,
+    second: FutureB,
+}
+
+impl<FutureA, FutureB> SimpleFuture for AndThen<FutureA, FutureB>
+where
+    FutureA: SimpleFuture<Output = ()>,
+    FutureB: SimpleFuture<Output = ()>,
+{
+    type Output = ();
+
+    fn poll(&mut self, wake: fn()) -> Pollm<Self::Output> {
+        if let Some(first) = &mut self.first {
+            match first.poll(wake) {
+                Pollm::Ready(()) => self.first.take(),
+                Pollm::Pending => return Pollm::Pending,
+            };
+        }
+        self.second.poll(wake)
+    }
+}
