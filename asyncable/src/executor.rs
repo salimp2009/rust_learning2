@@ -1,7 +1,7 @@
 #![allow(dead_code, unused_imports)]
 
 use futures::{
-    future::{BoxFuture, FutureExt},
+    future::{self, BoxFuture, FutureExt},
     task::{waker_ref, ArcWake},
 };
 
@@ -18,7 +18,7 @@ use crate::timerfuture::TimerFuture;
 
 /// Task executor that receives tasks off of a channel and runs them.
 pub struct Executor {
-    read_queue: Receiver<Arc<Task>>,
+    ready_queue: Receiver<Arc<Task>>,
 }
 
 /// `Spawner` spawns new futures onto the task channel.
@@ -39,4 +39,23 @@ pub struct Task {
     future: Mutex<Option<BoxFuture<'static, ()>>>,
     /// Handle to place the task itself back onto the task queue.
     task_sender: SyncSender<Arc<Task>>,
+}
+
+pub fn new_executor_and_spawner() -> (Executor, Spawner) {
+    const MAX_QUEUED_TASKS: usize = 10_000;
+    let (task_sender, ready_queue) = sync_channel(MAX_QUEUED_TASKS);
+    (Executor { ready_queue }, Spawner { task_sender })
+}
+
+impl Spawner {
+    pub fn spawn(&self, future: impl Future<Output = ()> + 'static + Send) {
+        let future = future.boxed();
+        let task = Arc::new(Task {
+            future: Mutex::new(Some(future)),
+            task_sender: self.task_sender.clone(),
+        });
+        self.task_sender.send(task).unwrap_or_else(|err| {
+            println!("too many tasks {:#?}", err);
+        });
+    }
 }
