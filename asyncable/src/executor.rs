@@ -1,7 +1,7 @@
 #![allow(dead_code, unused_imports)]
 
 use futures::{
-    future::{self, BoxFuture, FutureExt},
+    future::{self, BoxFuture, FutureExt, Pending},
     task::{waker_ref, ArcWake},
 };
 
@@ -10,7 +10,7 @@ use std::{
     future::Future,
     sync::mpsc::{sync_channel, Receiver, SyncSender},
     sync::{Arc, Mutex},
-    task::Context,
+    task::{Context, Poll},
     time::Duration,
 };
 
@@ -57,5 +57,32 @@ impl Spawner {
         self.task_sender.send(task).unwrap_or_else(|err| {
             println!("too many tasks {:#?}", err);
         });
+    }
+}
+
+impl ArcWake for Task {
+    fn wake_by_ref(arc_self: &Arc<Self>) {
+        // Implement `wake` by sending this task back onto the task channel
+        // so that it will be polled again by the executor.
+        let cloned = arc_self.clone();
+        arc_self.task_sender.send(cloned).unwrap_or_else(|err| {
+            println!("too many tasks {:#?}", err);
+        });
+    }
+}
+
+impl Executor {
+    pub fn run(&self) {
+        while let Ok(task) = self.ready_queue.recv() {
+            let mut future_slot = task.future.lock().unwrap();
+            if let Some(mut future) = future_slot.take() {
+                // local Waker from the task itself
+                let waker = waker_ref(&task);
+                let context = &mut Context::from_waker(&waker);
+                if future.as_mut().poll(context).is_pending() {
+                    *future_slot = Some(future);
+                }
+            }
+        }
     }
 }

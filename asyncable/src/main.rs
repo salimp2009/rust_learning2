@@ -1,3 +1,6 @@
+use std::time::Duration;
+
+use asyncable::{executor::new_executor_and_spawner, timerfuture::TimerFuture};
 use futures::executor::block_on;
 
 #[derive(Debug)]
@@ -35,4 +38,20 @@ fn main() {
     let _future = using_futures();
     block_on(using_futures());
     block_on(async_main());
+    let (executor, spawner) = new_executor_and_spawner();
+
+    // Spawn a task to print before and after waiting on a timer
+    spawner.spawn(async {
+        println!("our executor & future says hello");
+        TimerFuture::new(Duration::new(2, 0)).await;
+        println!("done after TimerFuture");
+    });
+
+    // Drop the spawner so that our executor knows it is finished and won't
+    // receive more incoming tasks to run.
+    drop(spawner);
+
+    // Run the executor until the task queue is empty.
+    // This will print "howdy!", pause, and then print "done!".
+    executor.run();
 }
