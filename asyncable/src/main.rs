@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{future::Future, time::Duration};
 
 use asyncable::{executor::new_executor_and_spawner, timerfuture::TimerFuture};
 use futures::executor::block_on;
@@ -34,6 +34,11 @@ pub async fn async_main() {
     futures::join!(f1, f2);
 }
 
+#[allow(clippy::manual_async_fn)]
+pub fn foo_lifetime<'a>(x: &'a u8) -> impl Future<Output = u8> + 'a {
+    async move { *x }
+}
+
 fn main() {
     let _future = using_futures();
     block_on(using_futures());
@@ -45,6 +50,13 @@ fn main() {
         println!("our executor & future says hello");
         TimerFuture::new(Duration::new(2, 0)).await;
         println!("done after TimerFuture");
+    });
+
+    spawner.spawn(async {
+        println!("our executor runs async_main");
+        TimerFuture::new(Duration::new(2, 0)).await;
+        async_main().await;
+        println!("done after async_main & TimerFuture");
     });
 
     // Drop the spawner so that our executor knows it is finished and won't

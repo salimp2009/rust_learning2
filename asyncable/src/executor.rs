@@ -1,20 +1,19 @@
-#![allow(dead_code, unused_imports)]
+// #![allow(dead_code, unused_imports)]
 
 use futures::{
-    future::{self, BoxFuture, FutureExt, Pending},
+    future::{BoxFuture, FutureExt},
     task::{waker_ref, ArcWake},
 };
 
 use std::{
-    cell::UnsafeCell,
     future::Future,
     sync::mpsc::{sync_channel, Receiver, SyncSender},
     sync::{Arc, Mutex},
-    task::{Context, Poll},
-    time::Duration,
+    task::Context,
+    // time::Duration,
 };
 
-use crate::timerfuture::TimerFuture;
+// use crate::timerfuture::TimerFuture;
 
 /// Task executor that receives tasks off of a channel and runs them.
 pub struct Executor {
