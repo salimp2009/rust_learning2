@@ -1,3 +1,5 @@
+#![allow(dead_code, unused_variables)]
+
 use std::{future::Future, time::Duration};
 
 use asyncable::{executor::new_executor_and_spawner, timerfuture::TimerFuture};
@@ -37,6 +39,56 @@ pub async fn async_main() {
 #[allow(clippy::manual_async_fn)]
 pub fn foo_lifetime<'a>(x: &'a u8) -> impl Future<Output = u8> + 'a {
     async move { *x }
+}
+
+pub fn bad() -> impl Future<Output = u8> + 'static {
+    /// original example
+    // let x = 5;
+    // foo_lifetime(&x)
+
+    // revised to make it compile
+    const X: u8 = 5;
+    foo_lifetime(&X)
+}
+
+/// By moving the argument into the async block,
+/// extend its lifetime to match that of the Future
+/// returned from the call to good.
+#[allow(clippy::manual_async_fn)]
+fn good() -> impl Future<Output = u8> {
+    async {
+        let x = 5;
+        foo_lifetime(&x).await
+    }
+}
+
+/// `async` block:
+///
+/// Multiple different `async` blocks can access the same local variable
+/// so long as they're executed within the variable's scope
+pub async fn blocks() {
+    let my_string = "salitos".to_string();
+
+    let future_one = async {
+        println!("future one: {}", my_string);
+    };
+
+    let future_two = async {
+        println!("future one: {}", my_string);
+    };
+}
+
+pub async fn move_blocks() {
+    let my_string = "salitos".to_string();
+
+    let future_one = async move {
+        println!("future one: {}", my_string);
+    };
+
+    // /// this will not compile since my_string is moved above
+    // let future_two = async {
+    //     println!("future one: {}", my_string);
+    // };
 }
 
 fn main() {
