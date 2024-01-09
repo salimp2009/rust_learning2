@@ -1,8 +1,8 @@
 #![allow(dead_code, unused_variables)]
 
-use std::{future::Future, time::Duration};
+use std::{future::Future, pin::Pin, time::Duration};
 
-use asyncable::{executor::new_executor_and_spawner, timerfuture::TimerFuture};
+use asyncable::{executor::new_executor_and_spawner, pinning::Test, timerfuture::TimerFuture};
 use futures::executor::block_on;
 
 #[derive(Debug)]
@@ -118,4 +118,40 @@ fn main() {
     // Run the executor until the task queue is empty.
     // This will print "howdy!", pause, and then print "done!".
     executor.run();
+
+    let mut test1 = Test::new("test1");
+    test1.init();
+
+    let mut test2 = Test::new("test2");
+    test2.init();
+
+    println!("a: {}, b:{}", test1.a(), test1.b());
+    println!("a: {}, b:{}", test2.a(), test2.b());
+
+    std::mem::swap(&mut test1, &mut test2);
+    println!("a: {}, b:{}", test1.a(), test1.b());
+    println!("a: {}, b:{}", test2.a(), test2.b());
+
+    let mut test3 = Test::new("test3");
+    let mut test3 = unsafe { Pin::new_unchecked(&mut test3) };
+    Test::init_pinned(test3.as_mut());
+
+    let mut test4 = Test::new("test4");
+    let mut test4 = unsafe { Pin::new_unchecked(&mut test4) };
+    Test::init_pinned(test4.as_mut());
+
+    println!(
+        "a: {}, b:{}",
+        Test::a_pinned(test3.as_ref()),
+        Test::b_pinned(test3.as_ref())
+    );
+
+    println!(
+        "a: {}, b:{}",
+        Test::a_pinned(test4.as_ref()),
+        Test::b_pinned(test4.as_ref())
+    );
+
+    // this wont compile since Test is !UnPin
+    // std::mem::swap(test3.get_mut(), test4.get_mut());
 }
