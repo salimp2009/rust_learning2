@@ -2,7 +2,10 @@
 
 use std::{future::Future, pin::Pin, time::Duration};
 
-use asyncable::{executor::new_executor_and_spawner, pinning::Test, timerfuture::TimerFuture};
+use asyncable::{
+    executor::new_executor_and_spawner, pinning::Test, pinning_heap::TestHeap,
+    timerfuture::TimerFuture,
+};
 use futures::executor::block_on;
 
 #[derive(Debug)]
@@ -154,4 +157,31 @@ fn main() {
 
     // this wont compile since Test is !UnPin
     // std::mem::swap(test3.get_mut(), test4.get_mut());
+
+    let mut test1 = TestHeap::new("test1");
+    let mut test2 = TestHeap::new("test2");
+
+    println!(
+        "TestHeap test1: a: {:#?}, b: {:#?}",
+        test1.as_ref().a(),
+        test1.as_ref().b()
+    );
+
+    println!(
+        "TestHeap test2: a: {:#?}, b: {:#?}",
+        test2.as_ref().a(),
+        test2.as_ref().b()
+    );
+    std::mem::swap(&mut test1, &mut test2);
+    println!(
+        "TestHeap after moved test1: a: {:#?}, b: {:#?}",
+        test1.as_ref().a(),
+        test1.as_ref().b()
+    );
+
+    println!(
+        "TestHeap after moved test2: a: {:#?}, b: {:#?}",
+        test2.as_ref().a(),
+        test2.as_ref().b()
+    );
 }
