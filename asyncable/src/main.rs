@@ -1,12 +1,16 @@
 #![allow(dead_code, unused_variables)]
 
-use std::{future::Future, pin::Pin, time::Duration};
-
 use asyncable::{
     executor::new_executor_and_spawner, pinning::Test, pinning_heap::TestHeap,
     timerfuture::TimerFuture,
 };
-use futures::executor::block_on;
+use futures::{
+    channel::mpsc::{self},
+    executor::block_on,
+    stream::StreamExt,
+};
+use pin_utils::pin_mut;
+use std::{future::Future, pin::Pin, time::Duration};
 
 #[derive(Debug)]
 struct Song {
@@ -92,6 +96,22 @@ pub async fn move_blocks() {
     // let future_two = async {
     //     println!("future one: {}", my_string);
     // };
+}
+
+pub fn execute_unpin_future(x: impl Future<Output = ()> + Unpin) {
+    println!("executing future unpin");
+}
+
+pub async fn send_received() {
+    const BUFFER_SIZE: usize = 10;
+    let (mut tx, mut rx) = mpsc::channel::<i32>(BUFFER_SIZE);
+    // tx.send(1).await.unwrap();
+    // tx.send(2).await.unwrap();
+    drop(tx);
+
+    assert_eq!(Some(1), rx.next().await);
+    assert_eq!(Some(2), rx.next().await);
+    assert_eq!(None, rx.next().await);
 }
 
 fn main() {
@@ -184,4 +204,25 @@ fn main() {
         test2.as_ref().a(),
         test2.as_ref().b()
     );
+
+    let fut_unpin1 = async {
+        println!("unpin future1");
+    };
+
+    // this will not compile since future needs unpinned !
+    // soln is to use Box::pin(fut) function or macro pin_mut!(fut)
+    // execute_unpin_future(fut_unpin1);
+
+    let fut_unpin1 = Box::pin(fut_unpin1);
+    execute_unpin_future(fut_unpin1);
+
+    let fut_unpin1 = async {
+        println!("unpin future1");
+    };
+    pin_mut!(fut_unpin1);
+    execute_unpin_future(fut_unpin1);
+
+    let result = async {
+        send_received().await;
+    };
 }
