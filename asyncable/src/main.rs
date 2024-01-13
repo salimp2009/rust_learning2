@@ -4,11 +4,7 @@ use asyncable::{
     executor::new_executor_and_spawner, pinning::Test, pinning_heap::TestHeap,
     timerfuture::TimerFuture,
 };
-use futures::{
-    channel::mpsc::{self},
-    executor::block_on,
-    stream::StreamExt,
-};
+use futures::{channel::mpsc, executor::block_on, stream::StreamExt};
 use pin_utils::pin_mut;
 use std::{future::Future, pin::Pin, time::Duration};
 
@@ -105,10 +101,16 @@ pub fn execute_unpin_future(x: impl Future<Output = ()> + Unpin) {
 pub async fn send_received() {
     const BUFFER_SIZE: usize = 10;
     let (mut tx, mut rx) = mpsc::channel::<i32>(BUFFER_SIZE);
-    // tx.send(1).await.unwrap();
-    // tx.send(2).await.unwrap();
+    tx.try_send(1).unwrap();
+    tx.try_send(2).unwrap();
     drop(tx);
 
+    let val = rx.next().await.unwrap();
+    println!("{val}");
+    let val = rx.next().await.unwrap();
+    println!("{val}");
+    let val = rx.next().await.unwrap();
+    println!("{val}");
     assert_eq!(Some(1), rx.next().await);
     assert_eq!(Some(2), rx.next().await);
     assert_eq!(None, rx.next().await);
@@ -225,4 +227,5 @@ fn main() {
     let result = async {
         send_received().await;
     };
+    execute_unpin_future(Box::pin(result));
 }
