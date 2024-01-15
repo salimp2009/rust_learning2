@@ -1,5 +1,6 @@
 pub mod concurrent_iter;
 pub mod executor;
+pub mod joinables;
 pub mod pinning;
 pub mod pinning_heap;
 pub mod simplefuture;
