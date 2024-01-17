@@ -2,7 +2,7 @@
 
 use asyncable::{
     executor::new_executor_and_spawner, joinables::try_get_book_music, pinning::Test,
-    pinning_heap::TestHeap, timerfuture::TimerFuture,
+    pinning_heap::TestHeap, splitables::race_tasks, timerfuture::TimerFuture,
 };
 use futures::{channel::mpsc, executor::block_on, stream::StreamExt};
 use pin_utils::pin_mut;
@@ -139,6 +139,8 @@ fn main() {
     spawner.spawn(async {
         try_get_book_music().await.unwrap();
     });
+
+    spawner.spawn(async { race_tasks().await });
 
     // Drop the spawner so that our executor knows it is finished and won't
     // receive more incoming tasks to run.
