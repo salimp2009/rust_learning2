@@ -1,14 +1,12 @@
 #![allow(dead_code, unused_variables)]
 
 use asyncable::{
-    concurrent_iter::jump_around, executor::new_executor_and_spawner, pinning::Test,
+    executor::new_executor_and_spawner, joinables::try_get_book_music, pinning::Test,
     pinning_heap::TestHeap, timerfuture::TimerFuture,
 };
 use futures::{channel::mpsc, executor::block_on, stream::StreamExt};
 use pin_utils::pin_mut;
 use std::{future::Future, pin::Pin, time::Duration};
-
-use asyncable::concurrent_iter;
 
 #[derive(Debug)]
 struct Song {
@@ -41,7 +39,7 @@ pub async fn async_main() {
     futures::join!(f1, f2);
 }
 
-#[allow(clippy::manual_async_fn)]
+#[allow(clippy::manual_async_fn, clippy::needless_lifetimes)]
 pub fn foo_lifetime<'a>(x: &'a u8) -> impl Future<Output = u8> + 'a {
     async move { *x }
 }
@@ -136,6 +134,10 @@ fn main() {
         TimerFuture::new(Duration::new(2, 0)).await;
         async_main().await;
         println!("done after async_main & TimerFuture");
+    });
+
+    spawner.spawn(async {
+        try_get_book_music().await.unwrap();
     });
 
     // Drop the spawner so that our executor knows it is finished and won't
