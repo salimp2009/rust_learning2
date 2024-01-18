@@ -1,10 +1,19 @@
 #![allow(dead_code, unused_variables)]
 
 use asyncable::{
-    executor::new_executor_and_spawner, joinables::try_get_book_music, pinning::Test,
-    pinning_heap::TestHeap, splitables::race_tasks, timerfuture::TimerFuture,
+    executor::{self, new_executor_and_spawner},
+    joinables::try_get_book_music,
+    pinning::Test,
+    pinning_heap::TestHeap,
+    selectables::{self, race_tasks, run_loop},
+    timerfuture::TimerFuture,
 };
-use futures::{channel::mpsc, executor::block_on, stream::StreamExt};
+use futures::{
+    channel::mpsc,
+    executor::block_on,
+    stream::{FuturesUnordered, StreamExt},
+    FutureExt,
+};
 use pin_utils::pin_mut;
 use std::{future::Future, pin::Pin, time::Duration};
 
@@ -120,7 +129,7 @@ fn main() {
     let _future = using_futures();
     block_on(using_futures());
     block_on(async_main());
-    let (executor, spawner) = new_executor_and_spawner();
+    let (executor, spawner) = executor::new_executor_and_spawner();
 
     // Spawn a task to print before and after waiting on a timer
     spawner.spawn(async {
@@ -141,7 +150,10 @@ fn main() {
     });
 
     spawner.spawn(async { race_tasks().await });
-
+    let stream = futures::stream::iter(1..=3).map(|_| ()).fuse();
+    spawner.spawn(async {
+        run_loop(stream, 5u8).await;
+    });
     // Drop the spawner so that our executor knows it is finished and won't
     // receive more incoming tasks to run.
     drop(spawner);
