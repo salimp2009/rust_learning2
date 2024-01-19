@@ -1,11 +1,14 @@
 #![allow(dead_code, unused_variables)]
 
+use async_std::{net::TcpListener, net::TcpStream, task};
+use futures::AsyncWriteExt;
+
 use asyncable::{
     executor::{self, new_executor_and_spawner},
     joinables::try_get_book_music,
     pinning::Test,
     pinning_heap::TestHeap,
-    selectables::{self, race_tasks, run_loop},
+    selectables::{self, race_tasks, run_loop, run_loop2},
     timerfuture::TimerFuture,
 };
 use futures::{
@@ -125,12 +128,25 @@ pub async fn send_received() {
     assert_eq!(None, rx.next().await);
 }
 
-fn main() {
+pub async fn process_request(stream: &mut TcpStream) -> Result<(), std::io::Error> {
+    stream.write_all(b"HTTP/1.1 200 OK\r\n\r\n").await?;
+    stream.write_all(b"Hello world").await?;
+    Ok(())
+}
+
+pub fn main() {
     let _future = using_futures();
     block_on(using_futures());
     block_on(async_main());
     let (executor, spawner) = executor::new_executor_and_spawner();
 
+    spawner.spawn(async move {
+        let listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
+        loop {
+            let (mut stream, _) = listener.accept().await.unwrap();
+            task::spawn(async move { process_request(&mut stream).await });
+        }
+    });
     // Spawn a task to print before and after waiting on a timer
     spawner.spawn(async {
         println!("our executor & future says hello");
@@ -154,6 +170,11 @@ fn main() {
     spawner.spawn(async {
         run_loop(stream, 5u8).await;
     });
+    let stream2 = futures::stream::iter(1..=3).map(|_| ()).fuse();
+    spawner.spawn(async {
+        run_loop2(stream2, 25u8).await;
+    });
+
     // Drop the spawner so that our executor knows it is finished and won't
     // receive more incoming tasks to run.
     drop(spawner);

@@ -4,7 +4,7 @@ use std::future;
 use futures::{
     future::{Fuse, FusedFuture, FutureExt},
     pin_mut, select,
-    stream::{FusedStream, Stream, StreamExt},
+    stream::{FusedStream, FuturesUnordered, Stream, StreamExt},
 };
 
 pub async fn task_one() -> future::Ready<i32> {
@@ -80,6 +80,38 @@ where
                 run_on_new_num_fut.set(run_on_new_num(new_num).fuse());
             },
             () = run_on_new_num_fut => {},
+
+            complete => break,
+            // panic!("`interval_timer` completed unexpectedly!"),
+        }
+    }
+}
+
+pub async fn run_loop2<S>(mut interval_timer: S, starting_num: u8)
+where
+    S: Stream<Item = ()> + FusedStream + Unpin,
+{
+    let mut run_on_new_num_fut_map = FuturesUnordered::new();
+    run_on_new_num_fut_map.push(run_on_new_num(starting_num));
+
+    let get_new_num_fut = Fuse::terminated();
+    pin_mut!(get_new_num_fut);
+
+    loop {
+        select! {
+            () = interval_timer.select_next_some() => {
+                // The timer has elapsed. Start a new `get_new_num_fut`
+                // if one was not already running.
+                if get_new_num_fut.is_terminated() {
+                    get_new_num_fut.set(get_new_num().fuse());
+                }
+            },
+            new_num = get_new_num_fut => {
+                run_on_new_num_fut_map.push(run_on_new_num(new_num));
+            },
+            res = run_on_new_num_fut_map.select_next_some() => {
+                println!("run_on_new_num_fut_map returned : {:#?}", res);
+            },
 
             complete => break,
             // panic!("`interval_timer` completed unexpectedly!"),
