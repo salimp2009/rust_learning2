@@ -1,7 +1,11 @@
 #![allow(dead_code, unused_variables)]
 
-use async_std::{net::TcpListener, net::TcpStream, task};
-use futures::AsyncWriteExt;
+use async_std::{
+    net::TcpListener,
+    net::TcpStream,
+    task::{self, block_on},
+};
+use futures::{future::join_all, AsyncWriteExt};
 
 use asyncable::{
     executor::{self, new_executor_and_spawner},
@@ -11,12 +15,7 @@ use asyncable::{
     selectables::{self, race_tasks, run_loop, run_loop2},
     timerfuture::TimerFuture,
 };
-use futures::{
-    channel::mpsc,
-    executor::block_on,
-    stream::{FuturesUnordered, StreamExt},
-    FutureExt,
-};
+use futures::{channel::mpsc, stream::StreamExt, FutureExt};
 use pin_utils::pin_mut;
 use std::{future::Future, pin::Pin, time::Duration};
 
@@ -134,19 +133,35 @@ pub async fn process_request(stream: &mut TcpStream) -> Result<(), std::io::Erro
     Ok(())
 }
 
+async fn foo_async(i: u32) -> u32 {
+    i
+}
+
 pub fn main() {
+    let futures_container = vec![foo_async(1), foo_async(2), foo_async(3)];
+
     let _future = using_futures();
     block_on(using_futures());
     block_on(async_main());
     let (executor, spawner) = executor::new_executor_and_spawner();
 
     spawner.spawn(async move {
+        println!(
+            "joined all futures from container: {:#?}",
+            join_all(futures_container).await
+        );
+    });
+
+    let streamer = async move {
         let listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
         loop {
             let (mut stream, _) = listener.accept().await.unwrap();
             task::spawn(async move { process_request(&mut stream).await });
         }
-    });
+    };
+    // spawner.spawn(streamer);
+    // block_on(streamer);
+
     // Spawn a task to print before and after waiting on a timer
     spawner.spawn(async {
         println!("our executor & future says hello");
