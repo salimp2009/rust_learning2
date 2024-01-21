@@ -137,7 +137,21 @@ async fn foo_async(i: u32) -> u32 {
     i
 }
 
+fn set_git_revision_hash() {
+    use std::process::Command;
+
+    let args = &["rev-parse", "--short=10", "HEAD"];
+    let Ok(output) = Command::new("git").args(args).output() else {
+        return;
+    };
+    let rev = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    if rev.is_empty() {
+        return;
+    }
+    println!("cargo:rustc-env=ASYNCABLE_GIT_HASH={}", rev);
+}
 pub fn main() {
+    set_git_revision_hash();
     let futures_container = vec![foo_async(1), foo_async(2), foo_async(3)];
 
     let _future = using_futures();
