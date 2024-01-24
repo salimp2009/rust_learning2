@@ -1,7 +1,7 @@
+use async_runtimes::observer::{self, *};
 use std::time;
 use tokio::runtime::Handle;
 use tokio::task::{JoinError, JoinHandle};
-
 pub fn tokio_builder() {
     let duration = time::Duration::from_secs(1);
 
@@ -26,11 +26,12 @@ pub fn not_async_function2(handle: Handle) {
         println!("second print statement");
     })
 }
+// this is non_blocking now due sleep(..).await
 async fn sleep_1s_blocking(task: &str) {
     use tokio::time::{sleep, Duration};
-    println!("Entering sleep_1s_blocking({task})");
-    sleep(Duration::from_secs(1)).await; // #1
-    println!("Returning from sleep_1s_blocking({task})");
+    println!("Entering sleep_1s_non_blocking({task})");
+    sleep(Duration::from_secs(1)).await;
+    println!("Returning from sleep_1s_non_blocking({task})");
 }
 
 fn returns_option() -> Result<i32, ()> {
@@ -39,6 +40,10 @@ fn returns_option() -> Result<i32, ()> {
 
 #[tokio::main(flavor = "multi_thread", worker_threads = 1)]
 async fn main() -> Result<(), JoinError> {
+    let subject = Subject;
+    let observer = MyObserver;
+    observer.observe(&subject).await;
+
     println!("Test 1: Run 2 async task sequentially");
     sleep_1s_blocking("Task 1").await;
     sleep_1s_blocking("Task 2").await;
