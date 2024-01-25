@@ -1,4 +1,4 @@
-use async_runtimes::observer::{self, *};
+use async_runtimes::observer::*;
 use std::time;
 use tokio::runtime::Handle;
 use tokio::task::{JoinError, JoinHandle};
@@ -43,6 +43,12 @@ async fn main() -> Result<(), JoinError> {
     let subject = Subject;
     let observer = MyObserver;
     observer.observe(&subject).await;
+
+    let observer2 = MyObserver;
+    observer2.observe2(&subject).await;
+
+    let observer3 = MyObserver;
+    observer3.observe3(&subject).await;
 
     println!("Test 1: Run 2 async task sequentially");
     sleep_1s_blocking("Task 1").await;
