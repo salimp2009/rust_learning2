@@ -40,6 +40,14 @@ fn returns_option() -> Result<i32, ()> {
 
 #[tokio::main(flavor = "multi_thread", worker_threads = 1)]
 async fn main() -> Result<(), JoinError> {
+    let mut subject3 = Subject3::new("some subject3 state");
+
+    let observer3_1 = MyObserver3::new("observer3_1");
+    let observer3_2 = MyObserver3::new("observer3_2");
+
+    subject3.attach(observer3_1.clone());
+    subject3.attach(observer3_2.clone());
+
     let subject = Subject;
     let observer = MyObserver;
     observer.observe(&subject).await;
@@ -49,6 +57,8 @@ async fn main() -> Result<(), JoinError> {
 
     let observer3 = MyObserver;
     observer3.observe3(&subject).await;
+
+    subject3.update().await;
 
     println!("Test 1: Run 2 async task sequentially");
     sleep_1s_blocking("Task 1").await;
