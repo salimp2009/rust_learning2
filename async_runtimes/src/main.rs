@@ -1,7 +1,9 @@
 use async_runtimes::observer::*;
 use std::time;
+use tokio::io::{self, AsyncWriteExt};
 use tokio::runtime::Handle;
-use tokio::task::{JoinError, JoinHandle};
+use tokio::task::JoinHandle;
+
 pub fn tokio_builder() {
     let duration = time::Duration::from_secs(1);
 
@@ -38,8 +40,37 @@ fn returns_option() -> Result<i32, ()> {
     Ok(5)
 }
 
-#[tokio::main(flavor = "multi_thread", worker_threads = 1)]
-async fn main() -> Result<(), JoinError> {
+pub async fn write_file(filename: &str) -> io::Result<()> {
+    let mut fut = tokio::fs::File::create(filename).await?;
+    fut.write_all(b"Hello async file!!").await?;
+    fut.flush().await?;
+    Ok(())
+}
+
+pub fn read_file(filename: &str) -> io::Result<String> {
+    std::fs::read_to_string(filename)
+}
+
+#[tokio::main(flavor = "multi_thread", worker_threads = 2)]
+async fn main() -> io::Result<()> {
+    // mixing async & sync
+    let filename = "mixing_async_with_sync.txt";
+
+    let subject = Subject;
+    let observer = MyObserver;
+    observer.observe(&subject).await;
+    write_file(filename).await?;
+
+    // async {
+    //     write_file(filename).await.ok();
+    // }
+    // .await;
+
+    let contents = tokio::task::spawn_blocking(|| read_file(filename)).await??;
+    println!("File contents: {}", contents);
+
+    // let _ = tokio::fs::remove_file(filename).await;
+
     let mut subject3 = Subject3::new("some subject3 state");
 
     let observer3_1 = MyObserver3::new("observer3_1");
@@ -47,10 +78,6 @@ async fn main() -> Result<(), JoinError> {
 
     subject3.attach(observer3_1.clone());
     subject3.attach(observer3_2.clone());
-
-    let subject = Subject;
-    let observer = MyObserver;
-    observer.observe(&subject).await;
 
     let observer2 = MyObserver;
     observer2.observe2(&subject).await;

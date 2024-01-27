@@ -73,10 +73,10 @@ impl Observer3 for MyObserver {
         _subject: &'a Self::Subject,
     ) -> Pin<Box<dyn Future<Output = Self::Output> + 'a + Send>> {
         Box::pin(async {
-            println!("Observer3 async trait:before sleep");
+            println!("Observer3 with MyObserver async trait:before sleep");
             use ::tokio::time::{sleep, Duration};
             sleep(Duration::from_millis(1000)).await;
-            println!("Observer3 async trait:after sleep");
+            println!("Observer3 MyObserver async trait:after sleep");
         })
     }
     // add code here
