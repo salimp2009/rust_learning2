@@ -1,11 +1,11 @@
 use async_runtimes::observer::*;
-use std::time;
 use tokio::io::{self, AsyncWriteExt};
 use tokio::runtime::Handle;
 use tokio::task::JoinHandle;
+use tokio::time::{sleep, Duration};
 
 pub fn tokio_builder() {
-    let duration = time::Duration::from_secs(1);
+    let duration = Duration::from_secs(1);
 
     let rt = tokio::runtime::Builder::new_current_thread()
         .enable_time()
@@ -30,7 +30,7 @@ pub fn not_async_function2(handle: Handle) {
 }
 // this is non_blocking now due sleep(..).await
 async fn sleep_1s_blocking(task: &str) {
-    use tokio::time::{sleep, Duration};
+    // use tokio::time::{sleep, Duration};
     println!("Entering sleep_1s_non_blocking({task})");
     sleep(Duration::from_secs(1)).await;
     println!("Returning from sleep_1s_non_blocking({task})");
@@ -51,8 +51,30 @@ pub fn read_file(filename: &str) -> io::Result<String> {
     std::fs::read_to_string(filename)
 }
 
-#[tokio::main(flavor = "multi_thread", worker_threads = 2)]
+#[tracing::instrument]
+pub async fn sleep_1s() {
+    tokio::time::sleep(Duration::from_secs(1)).await;
+}
+
+#[tracing::instrument]
+pub async fn sleep_2s() {
+    tokio::time::sleep(Duration::from_secs(2)).await;
+}
+
+#[tracing::instrument]
+pub async fn sleep_3s() {
+    tokio::time::sleep(Duration::from_secs(3)).await;
+}
+
+#[tokio::main(flavor = "multi_thread", worker_threads = 1)]
 async fn main() -> io::Result<()> {
+    // profiling async code
+    // console_subscriber::init();
+    // loop {
+    //     tokio::spawn(sleep_1s());
+    //     tokio::spawn(sleep_2s());
+    //     sleep_3s().await;
+    // }
     // mixing async & sync
     let filename = "mixing_async_with_sync.txt";
 
