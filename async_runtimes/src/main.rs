@@ -66,6 +66,24 @@ pub async fn sleep_3s() {
     tokio::time::sleep(Duration::from_secs(3)).await;
 }
 
+#[allow(unused_imports)]
+mod test {
+    use super::*;
+
+    #[tokio::test]
+    pub async fn sleep_test() {
+        let start_time = Instant::now();
+        tokio::time::sleep(Duration::from_secs(1)).await;
+        sleep_3s().await;
+        let end_time = Instant::now();
+        let time = end_time
+            .checked_duration_since(start_time)
+            .unwrap()
+            .as_secs();
+        assert_eq!(time, 4);
+    }
+}
+
 #[tokio::main(flavor = "multi_thread", worker_threads = 1)]
 async fn main() -> io::Result<()> {
     // profiling async code
