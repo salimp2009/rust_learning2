@@ -1,4 +1,3 @@
-use tracing::field::debug;
 use tracing_subscriber::{
     filter::LevelFilter, fmt, prelude::*, util::SubscriberInitExt, EnvFilter,
 };
