@@ -17,3 +17,13 @@ impl From<sqlx::Error> for Error {
         }
     }
 }
+
+impl IntoResponse for Error {
+    fn into_response(self) -> Response {
+        match self {
+            Error::Sqlx(code, body) => (code, body).into_response(),
+            Error::NotFound => StatusCode::NOT_FOUND.into_response(),
+        }
+    }
+    // add code here
+}
