@@ -11,7 +11,7 @@ pub async fn create_router(dbpool: sqlx::Pool<sqlx::Sqlite>) -> axum::Router {
         .route("/ready", get(ping))
         // Api routes are nested under v1
         .nest(
-            "v1", //
+            "/v1", //
             Router::new()
                 // path /v1/todos; two methods are allowed; GET & POST
                 .route("/todos", get(todo_list).post(todo_create))
