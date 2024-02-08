@@ -1,0 +1,20 @@
+[package]
+name = "api_client"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.4.18", features = ["derive"] }
+colored_json = "4.1.0"
+hyper = { version = "1.1.0", features = ["client", "http1"] }
+serde = "1.0.196"
+serde_json = "1.0.113"
+tokio = { version = "1.36.0", features = [
+  "macros",
+  "rt-multi-thread",
+  "io-util",
+  "io-std",
+] }
+yansi = "0.5.1"
