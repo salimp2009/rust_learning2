@@ -11,8 +11,15 @@ async fn main() {
 
     let bind_addr = std::env::var("BIND_ADDR").unwrap_or_else(|_| "127.0.0.1:3000".to_string());
 
-    axum::Server::bind(&bind_addr.parse().unwrap())
-        .serve(router.into_make_service())
+    let listener = tokio::net::TcpListener::bind(bind_addr).await.unwrap();
+
+    axum::serve(listener, router)
         .await
-        .expect("unable to start server")
+        .expect("unable to start server");
+
+    // Original code with the older versions of axum & tower-http
+    // axum::Server::bind(&bind_addr.parse().unwrap())
+    //     .serve(router.into_make_service())
+    //     .await
+    //     .expect("unable to start server")
 }
