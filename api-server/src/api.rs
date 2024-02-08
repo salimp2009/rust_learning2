@@ -28,7 +28,7 @@ pub(crate) async fn todo_read(
 
 pub(crate) async fn todo_create(
     State(dbpool): State<SqlitePool>,
-    Path(new_todo): Path<CreateTodo>,
+    Json(new_todo): Json<CreateTodo>,
 ) -> Result<Json<Todo>, Error> {
     Todo::create(dbpool, new_todo).await.map(Json::from)
 }
@@ -36,7 +36,7 @@ pub(crate) async fn todo_create(
 pub(crate) async fn todo_update(
     State(dbpool): State<SqlitePool>,
     Path(id): Path<i64>,
-    Path(updated_todo): Path<UpdateTodo>,
+    Json(updated_todo): Json<UpdateTodo>,
 ) -> Result<Json<Todo>, Error> {
     Todo::update(dbpool, id, updated_todo).await.map(Json::from)
 }

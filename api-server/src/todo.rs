@@ -22,7 +22,7 @@ impl Todo {
     }
 
     pub async fn read(dbpool: SqlitePool, id: i64) -> Result<Todo, Error> {
-        query_as("select * from todos where id =?")
+        query_as("select * from todos where id = ?")
             .bind(id)
             .fetch_one(&dbpool)
             .await

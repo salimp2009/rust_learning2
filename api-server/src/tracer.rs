@@ -1,6 +1,4 @@
-use tracing_subscriber::{
-    filter::LevelFilter, fmt, prelude::*, util::SubscriberInitExt, EnvFilter,
-};
+use tracing_subscriber::{filter::LevelFilter, fmt, prelude::*, EnvFilter};
 
 pub fn init_tracing() {
     let rust_log = std::env::var(EnvFilter::DEFAULT_ENV)
