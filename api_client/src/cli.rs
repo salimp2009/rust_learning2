@@ -5,6 +5,7 @@ use hyper::Uri;
 
 #[derive(Parser)]
 pub(crate) struct Cli {
+    /// Base URL of API service
     pub url: hyper::Uri,
 
     #[command(subcommand)]
@@ -13,22 +14,22 @@ pub(crate) struct Cli {
 
 #[derive(Subcommand, Debug)]
 pub(crate) enum Commands {
+    /// List all todos
     List,
-    // create a new todo
-    Create {
-        body: String,
-    },
-    // read a todo
-    Read {
-        id: i64,
-    },
+    /// Create a new todo
+    Create { body: String },
+    /// Read a todo
+    Read { id: i64 },
+    /// Update a todo
     Update {
+        /// The todo ID
         id: i64,
+        /// The todo body
         body: String,
+        /// Mark todo as completed
         #[arg(short, long)]
         completed: bool,
     },
-    Delete {
-        id: i64,
-    },
+    /// The todo ID
+    Delete { id: i64 },
 }
