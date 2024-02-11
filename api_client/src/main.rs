@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use clap::Parser;
 use colored_json::prelude::*;
 use hyper::{body::HttpBody as _, header::CONTENT_TYPE, Body, Client, Method, Request, Uri};
 use serde_json::json;
@@ -82,5 +82,39 @@ async fn request(
     method: Method,
     body: Option<String>,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let client = Client::new();
+
+    let mut res = client
+        .request(
+            Request::builder()
+                .uri(url)
+                .method(method)
+                .header("Content-Type", "application/json")
+                .body(body.map(Body::from).unwrap_or_else(Body::empty))?,
+        )
+        .await?;
+
+    let mut buf = Vec::new();
+    while let Some(next) = res.data().await {
+        let chunk = next?;
+        buf.extend_from_slice(&chunk);
+    }
+
+    let s = String::from_utf8(buf)?;
+
+    eprintln!("Status: {}", Paint::green(res.status()));
+
+    if res.headers().contains_key(CONTENT_TYPE) {
+        let content_type = res.headers()[CONTENT_TYPE].to_str()?;
+        eprintln!("Content_Type: {}", Paint::green(content_type));
+        if content_type.starts_with("application/json") {
+            println!("{}", &s.to_colored_json_auto()?);
+        } else {
+            println!("{}", &s);
+        }
+    } else {
+        println!("{}", &s);
+    }
+
     Ok(())
 }

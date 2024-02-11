@@ -1,7 +1,5 @@
-use std::i64;
-
 use clap::{Parser, Subcommand};
-use hyper::Uri;
+// use hyper;
 
 #[derive(Parser)]
 pub(crate) struct Cli {
