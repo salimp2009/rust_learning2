@@ -28,6 +28,9 @@ pub(crate) enum Commands {
         #[arg(short, long)]
         completed: bool,
     },
-    /// The todo ID
-    Delete { id: i64 },
+    /// Delete a todo
+    Delete {
+        /// The todo ID
+        id: i64,
+    },
 }
