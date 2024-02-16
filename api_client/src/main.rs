@@ -79,8 +79,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             .await
         }
     }
-
-    // Ok(())
 }
 
 async fn request(
@@ -105,7 +103,6 @@ async fn request(
     while let Some(next) = res.frame().await {
         let chunk = next?;
         buf.extend_from_slice(chunk.data_ref().unwrap());
-        println!("{:?}", chunk);
     }
 
     let s = String::from_utf8(buf)?;
