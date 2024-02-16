@@ -1,11 +1,17 @@
 use clap::Parser;
 use colored_json::prelude::*;
-use hyper::{body::HttpBody as _, header::CONTENT_TYPE, Body, Client, Method, Request, Uri};
+use hyper::{
+    /* body::HttpBody as _, */ header::CONTENT_TYPE, /* Body, Client, */ Method, Request,
+    Uri,
+};
 use serde_json::json;
 use yansi::Paint;
 
 use crate::cli::{Cli, Commands};
-
+use bytes::Bytes;
+use http_body_util::{BodyExt, Full};
+use hyper_util::client::legacy::Client;
+use hyper_util::rt::TokioExecutor;
 mod cli;
 
 #[tokio::main]
@@ -82,7 +88,8 @@ async fn request(
     method: Method,
     body: Option<String>,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    let client = Client::new();
+    // let client = Client::new();
+    let client: Client<_, Full<Bytes>> = Client::builder(TokioExecutor::new()).build_http();
 
     let mut res = client
         .request(
@@ -90,14 +97,15 @@ async fn request(
                 .uri(url)
                 .method(method)
                 .header("Content-Type", "application/json")
-                .body(body.map(Body::from).unwrap_or_else(Body::empty))?,
+                .body(body.map(Full::from).unwrap_or_else(|| Full::from("")))?,
         )
         .await?;
 
     let mut buf = Vec::new();
-    while let Some(next) = res.data().await {
+    while let Some(next) = res.frame().await {
         let chunk = next?;
-        buf.extend_from_slice(&chunk);
+        buf.extend_from_slice(chunk.data_ref().unwrap());
+        println!("{:?}", chunk);
     }
 
     let s = String::from_utf8(buf)?;
