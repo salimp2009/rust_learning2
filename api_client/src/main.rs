@@ -86,7 +86,7 @@ async fn request(
     method: Method,
     body: Option<String>,
 ) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    // let client = Client::new();
+    // let oclient = Client::new();
     let client: Client<_, Full<Bytes>> = Client::builder(TokioExecutor::new()).build_http();
 
     let mut res = client
