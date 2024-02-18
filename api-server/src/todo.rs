@@ -43,7 +43,9 @@ impl Todo {
         updated_todo: UpdateTodo,
     ) -> Result<Todo, Error> {
         query_as(
-            "update todos  set body = ?, completed = ?, \
+            "update todos   \
+            set body = ( CASE WHEN $1 NOTNULL THEN ? ELSE (body) END ) , \
+            completed = ?, \
             updated_at = datetime('now') where id = ? returning *",
         )
         .bind(updated_todo.body())
