@@ -23,7 +23,7 @@ pub(crate) enum Commands {
         /// The todo ID
         id: i64,
         /// The todo body
-        body: String,
+        body: Option<String>,
         /// Mark todo as completed
         #[arg(short, long)]
         completed: bool,

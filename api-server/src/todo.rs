@@ -43,7 +43,7 @@ impl Todo {
         updated_todo: UpdateTodo,
     ) -> Result<Todo, Error> {
         query_as(
-            "update todos set body = ?, completed = ?, \
+            "update todos  set body = ?, completed = ?, \
             updated_at = datetime('now') where id = ? returning *",
         )
         .bind(updated_todo.body())
@@ -65,13 +65,13 @@ impl Todo {
 
 #[derive(Deserialize)]
 pub struct UpdateTodo {
-    body: String,
+    body: Option<String>,
     completed: bool,
 }
 
 impl UpdateTodo {
-    pub fn body(&self) -> &str {
-        self.body.as_ref()
+    pub fn body(&self) -> Option<&str> {
+        self.body.as_deref()
     }
 
     pub fn completed(&self) -> bool {
