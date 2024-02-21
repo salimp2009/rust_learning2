@@ -6,7 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-iced = { git = "https://github.com/iced-rs/iced.git", rev = "a1114ca" }
+iced = "*"
+# iced = { git = "https://github.com/iced-rs/iced.git", rev = "a1114ca" }
 
 [patch.crates-io]
+# iced_aw = { git = 'https://github.com/iced-rs/iced_aw.git', rev = 'ed59455' }
 wgpu = { git = "https://github.com/gfx-rs/wgpu", rev = "ac8756c" }

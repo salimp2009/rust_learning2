@@ -56,11 +56,50 @@ pub fn big_vec_test() {
     );
 }
 
+pub fn copy_frm_slice_test() {
+    let mut vec1 = vec![1, 2, 3];
+    let now = Instant::now();
+    vec1.copy_from_slice(&[4, 5, 6]);
+    println!("Copy from slice took: {}", now.elapsed().as_secs_f32());
+
+    let mut vec1 = vec![1, 2, 3];
+    let now = Instant::now();
+    for i in 4..6 {
+        vec1.push(i);
+    }
+    println!("Copy using push took: {}", now.elapsed().as_secs_f32());
+
+    let mut vec1 = vec![1, 2, 3];
+    let now = Instant::now();
+    (4..6).for_each(|i| {
+        vec1.push(i);
+    });
+    println!("Copy using for_each : {}", now.elapsed().as_secs_f32());
+}
+
+pub fn copy_frm_slice_big_vec() {
+    let big_vec_src = vec![0; 10_000_000];
+    let mut big_vec_dest = Vec::<i32>::with_capacity(10_000_000);
+    let now = Instant::now();
+    big_vec_src.into_iter().for_each(|val| {
+        big_vec_dest.push(val);
+    });
+    println!("Copy using into_iter : {}", now.elapsed().as_secs_f32());
+
+    let big_vec_src = vec![0; 10_000_000];
+    let mut big_vec_dest = vec![0; 10_000_000];
+    let now = Instant::now();
+    big_vec_dest.copy_from_slice(&big_vec_src);
+    println!("Using copy_from_slice : {}", now.elapsed().as_secs_f32());
+}
+
 pub fn main() {
     // vector_alloc_size();
 
     // let myval = "10".to_owned();
     // is_string(&myval);
     // println!("myval; is_string ? {}", myval);
-    big_vec_test();
+    // big_vec_test();
+    // copy_frm_slice_test();
+    copy_frm_slice_big_vec();
 }
