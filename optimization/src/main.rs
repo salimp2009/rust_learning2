@@ -1,4 +1,9 @@
-use std::time::Instant;
+#![cfg_attr(feature = "simd", feature(portable_simd))]
+
+#[cfg(feature = "simd")]
+use std::simd::Simd;
+
+use std::{time::Instant, u64};
 
 pub fn is_string(val: &dyn std::any::Any) {
     if val.is::<String>() {
@@ -93,6 +98,31 @@ pub fn copy_frm_slice_big_vec() {
     println!("Using copy_from_slice : {}", now.elapsed().as_secs_f32());
 }
 
+pub fn initialize() -> ([u64; 64], [u64; 64]) {
+    let mut a = [0u64; 64];
+    let mut b = [0u64; 64];
+
+    (0..64).for_each(|val| {
+        a[val] = u64::try_from(val).unwrap();
+        b[val] = u64::try_from(val).unwrap();
+    });
+    (a, b)
+}
+
+#[cfg(feature = "simd")]
+pub fn using_simd() {
+    let (mut a, b) = initialize();
+
+    let now = Instant::now();
+    for _ in 0..100_000 {
+        let c = std::iter::zip(a, b).map(|(l, r)| l * r);
+        let d = std::iter::zip(a, c.clone()).map(|(l, r)| l + r);
+        let e = std::iter::zip(c, d.clone()).map(|(l, r)| l * r);
+        let _a = std::iter::zip(e, d).map(|(l, r)| l ^ r);
+    }
+    println!("Without SIMD took {}s", now.elapsed().as_secs_f32());
+}
+
 pub fn main() {
     // vector_alloc_size();
 
@@ -101,5 +131,6 @@ pub fn main() {
     // println!("myval; is_string ? {}", myval);
     // big_vec_test();
     // copy_frm_slice_test();
-    copy_frm_slice_big_vec();
+    // copy_frm_slice_big_vec();
+    using_simd();
 }
