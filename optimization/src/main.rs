@@ -3,7 +3,7 @@
 #[cfg(feature = "simd")]
 use std::simd::Simd;
 
-use std::{time::Instant, u64};
+use std::{iter::zip, time::Instant, u64};
 
 pub fn is_string(val: &dyn std::any::Any) {
     if val.is::<String>() {
@@ -115,12 +115,27 @@ pub fn using_simd() {
 
     let now = Instant::now();
     for _ in 0..100_000 {
-        let c = std::iter::zip(a, b).map(|(l, r)| l * r);
-        let d = std::iter::zip(a, c.clone()).map(|(l, r)| l + r);
-        let e = std::iter::zip(c, d.clone()).map(|(l, r)| l * r);
-        let _a = std::iter::zip(e, d).map(|(l, r)| l ^ r);
+        let mut c = zip(a, b).map(|(l, r)| l * r);
+        let mut d = zip(a, c.next()).map(|(l, r)| l + r);
+        let e = zip(c, d.next()).map(|(l, r)| l * r);
+        let _a = zip(e, d).map(|(l, r)| l ^ r);
     }
     println!("Without SIMD took {}s", now.elapsed().as_secs_f32());
+
+    let (a_vec, b_vec) = initialize();
+    let mut a_vec = Simd::from(a_vec);
+    let b_vec = Simd::from(b_vec);
+
+    let now = Instant::now();
+    for _ in 0..100_000 {
+        let c_vec = a_vec * b_vec;
+        let d_vec = a_vec + c_vec;
+        let e_vec = c_vec * d_vec;
+        a_vec = e_vec ^ d_vec;
+    }
+    println!("With    SIMD took {}s", now.elapsed().as_secs_f32());
+    let a_vec = a_vec.as_array();
+    println!("a vec after SIMD {:#?}", a_vec[4])
 }
 
 pub fn main() {
@@ -132,5 +147,6 @@ pub fn main() {
     // big_vec_test();
     // copy_frm_slice_test();
     // copy_frm_slice_big_vec();
+    #[cfg(feature = "simd")]
     using_simd();
 }
