@@ -118,7 +118,12 @@ pub fn using_simd() {
         let c = zip(a, b).map(|(l, r)| l * r);
         let d = zip(a, c.clone()).map(|(l, r)| l + r);
         let e = zip(c, d.clone()).map(|(l, r)| l * r);
-        let a = zip(e, d).map(|(l, r)| l ^ r).collect::<Vec<_>>();
+        zip(e, d)
+            .map(|(l, r)| l ^ r)
+            .enumerate()
+            .for_each(|(ind, val)| {
+                a[ind] = val;
+            });
     }
     println!("Without SIMD took {}s", now.elapsed().as_secs_f32());
 
@@ -136,6 +141,7 @@ pub fn using_simd() {
     println!("With    SIMD took {}s", now.elapsed().as_secs_f32());
     let a_vec = a_vec.as_array();
     println!("a vec after SIMD {:#?}", a_vec[4]);
+    println!("a array after without SIMD {:#?}", a[4]);
 }
 
 pub fn main() {
