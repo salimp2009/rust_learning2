@@ -140,6 +140,7 @@ pub fn using_simd() {
     }
     println!("With    SIMD took {}s", now.elapsed().as_secs_f32());
     let a_vec = a_vec.as_array();
+    assert_eq!(a_vec, &a);
     println!("a vec after SIMD {:#?}", a_vec[4]);
     println!("a array after without SIMD {:#?}", a[4]);
 }
