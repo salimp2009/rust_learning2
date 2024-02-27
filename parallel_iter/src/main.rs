@@ -90,4 +90,15 @@ fn main() {
     let re = Regex::new(r"\b\w{13}\b").unwrap();
     let hay = b"I categorically deny having triskaidekaphobia.";
     assert!(re.is_match(hay));
+
+    let a = [1, 4, 2, 3];
+
+    // this iterator sequence is complex.
+    let sum = a
+        .par_iter()
+        .cloned()
+        .filter(|&x| x % 2 == 0)
+        .reduce(|| 0, |sum, i| sum + i);
+
+    println!("sum: {}", sum);
 }
