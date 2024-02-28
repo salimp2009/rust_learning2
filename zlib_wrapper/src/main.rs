@@ -1,4 +1,6 @@
-use std::ffi::{c_int, c_ulong};
+use std::ffi::{c_int, c_uchar, c_uint, c_ulong, CStr};
+
+use libc::c_char;
 
 #[link(name = "z")]
 extern "C" {
@@ -15,7 +17,7 @@ extern "C" {
         source: *const u8,
         source_len: c_ulong,
     ) -> c_int;
-
+    fn hello_world() -> *const c_char;
 }
 
 pub fn zlib_compress(source: &[u8]) -> Vec<u8> {
@@ -49,6 +51,22 @@ pub fn zlib_uncompress(source: &[u8], max_dest_len: usize) -> Vec<u8> {
     }
 }
 
+fn call_hello_world() -> &'static str {
+    unsafe {
+        CStr::from_ptr(hello_world())
+            .to_str()
+            .expect("String conversion failed!")
+    }
+}
+
+#[repr(C)]
+#[allow(non_camel_case_types)]
+struct gzFile_s {
+    have: c_uint,
+    next: *mut c_uchar,
+    pos: i64,
+}
+
 fn main() {
     let hello_world = "hello_world".as_bytes();
     let hello_world_compressed = zlib_compress(hello_world);
@@ -65,4 +83,5 @@ fn main() {
         "hello_world_uncompressed : {}",
         String::from_utf8(hello_world_uncompressed).expect("Invalid character")
     );
+    println!("call c_program hello world: {}", call_hello_world());
 }
