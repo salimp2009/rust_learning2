@@ -1,4 +1,8 @@
 use core::panic;
+// testing dynamic library from Rust
+// which also has Serde as dependency
+// TODO:: Need to find out how to also compile Serde as a dynamic lib
+use dynotest::{add, MyType};
 use std::ffi::{c_int, c_uchar, c_uint, c_ulong, CStr, CString};
 
 use libc::c_char;
@@ -117,5 +121,13 @@ fn main() {
         String::from_utf8(hello_world_uncompressed).expect("Invalid character")
     );
     println!("call c_program hello world: {}", call_hello_world());
-    println!("contents of main.rs: {:#?}", read_gz_file("src/main.rs.gz"))
+    println!("contents of main.rs: {:#?}", read_gz_file("src/main.rs.gz"));
+
+    println!("add dynamic lib {}", add(5, 6));
+
+    let my_type = MyType {
+        value: 5,
+        name: "Salitos".into(),
+    };
+    println!("my types from dyno : {:#?}", my_type);
 }
