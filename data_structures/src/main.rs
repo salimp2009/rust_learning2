@@ -27,4 +27,15 @@ pub fn main() {
         first_half.len(),
         secnd_half.len()
     );
+
+    let wordlist = "one, two, three";
+    wordlist
+        .split(',')
+        .map(|word| word.trim())
+        .for_each(|word| println!("word: {}", word));
+    let mut my_vec = vec![1, 2, 3, 4];
+
+    let vec_slize = my_vec.as_slice();
+    // my_vec.resize(10, 5);
+    println!("slice: {:?}", vec_slize);
 }
