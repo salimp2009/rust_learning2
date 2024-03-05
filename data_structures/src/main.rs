@@ -1,9 +1,18 @@
+use metrohash::MetroBuildHasher;
+use std::collections::HashMap;
+
 pub fn print_string(s: String) {
     println!("print_string: {}", s);
 }
 
 pub fn print_str(s: &str) {
     println!("print_str: {}", s);
+}
+
+#[derive(Debug, Eq, Hash, PartialEq)]
+struct CompoundKey {
+    name: String,
+    value: i32,
 }
 
 pub fn main() {
@@ -38,4 +47,22 @@ pub fn main() {
     let vec_slize = my_vec.as_slice();
     // my_vec.resize(10, 5);
     println!("slice: {:?}", vec_slize);
+
+    let mut map = HashMap::<String, String, MetroBuildHasher>::default();
+    map.insert("hello".into(), "Hellomap".into());
+
+    println!("Hashmap with MetroHasher: {:#?}", map);
+
+    let mut map2 = HashMap::<CompoundKey, CompoundKey>::new();
+    map2.insert(
+        CompoundKey {
+            name: "compound".into(),
+            value: 5,
+        },
+        CompoundKey {
+            name: "value".into(),
+            value: 32,
+        },
+    );
+    println!("Hashmap with CompoundKey: {:#?}", map2);
 }
