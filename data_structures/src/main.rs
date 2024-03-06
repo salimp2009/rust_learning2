@@ -15,6 +15,35 @@ struct CompoundKey {
     value: i32,
 }
 
+pub fn check_primitives() {
+    let value = 0u8;
+    println!(
+        "value: {}, length={}, length of u8={}",
+        value,
+        std::mem::size_of_val(&value),
+        std::mem::size_of::<u8>()
+    );
+    let value = 0u32;
+    println!(
+        "value: {}, length={}, length of u32={}",
+        value,
+        std::mem::size_of_val(&value),
+        std::mem::size_of::<u32>()
+    );
+    let value = 0u128;
+    println!(
+        "value: {}, length={}, length of u128={}",
+        value,
+        std::mem::size_of_val(&value),
+        std::mem::size_of::<u128>()
+    );
+    println!("Binary (base 2)         0b1111_1111={}", 0b1111_1111);
+    println!("Octal (base 8)          0o1111_1111={}", 0o1111_1111);
+    println!("Decimal (base 10)       1111_1111={}", 1111_1111);
+    println!("Hexadecimal (base 16)   0x1111_1111={}", 0x1111_1111);
+    println!("Byte literal            b'A'={}", b'A');
+}
+
 pub fn main() {
     print_string(String::from("my String"));
     print_str(&String::from("my String"));
@@ -65,4 +94,5 @@ pub fn main() {
         },
     );
     println!("Hashmap with CompoundKey: {:#?}", map2);
+    check_primitives();
 }
