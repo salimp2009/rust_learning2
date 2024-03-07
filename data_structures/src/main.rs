@@ -44,6 +44,15 @@ pub fn check_primitives() {
     println!("Byte literal            b'A'={}", b'A');
 }
 
+struct EmptyStruct {}
+struct AnotherEmptyStruct;
+
+#[derive(Debug, Clone, Default)]
+struct Debuggable {
+    string: String,
+    number: i32,
+}
+
 pub fn main() {
     print_string(String::from("my String"));
     print_str(&String::from("my String"));
@@ -95,4 +104,12 @@ pub fn main() {
     );
     println!("Hashmap with CompoundKey: {:#?}", map2);
     check_primitives();
+
+    println!(
+        "EmptyStruct size : {}, {}",
+        std::mem::size_of_val(&EmptyStruct {}),
+        std::mem::size_of::<EmptyStruct>()
+    );
+    let debuggable_struct = Debuggable::default();
+    println!("debuggable_struct: {:?}", debuggable_struct);
 }
