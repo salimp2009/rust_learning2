@@ -48,9 +48,26 @@ struct EmptyStruct {}
 struct AnotherEmptyStruct;
 
 #[derive(Debug, Clone, Default)]
-struct Debuggable {
+struct DebuggableStruct {
     string: String,
     number: i32,
+}
+impl DebuggableStruct {
+    pub fn increment_number(&mut self) {
+        self.number += 1;
+    }
+
+    pub fn incremented_number(mut self) -> Self {
+        self.number += 1;
+        self
+    }
+}
+
+#[derive(Debug, PartialEq)]
+enum JapaneseDogs {
+    AkitaKen,
+    HokkaidoInu,
+    KaiKen,
 }
 
 pub fn main() {
@@ -110,6 +127,14 @@ pub fn main() {
         std::mem::size_of_val(&EmptyStruct {}),
         std::mem::size_of::<EmptyStruct>()
     );
-    let debuggable_struct = Debuggable::default();
-    println!("debuggable_struct: {:?}", debuggable_struct);
+    let mut debuggable_struct = DebuggableStruct::default();
+    debuggable_struct.increment_number();
+    println!(
+        "debuggable_struct: {:?}",
+        debuggable_struct.incremented_number()
+    );
+    println!(
+        "using enums JapaneseDogs: {}",
+        JapaneseDogs::AkitaKen as u32
+    );
 }
