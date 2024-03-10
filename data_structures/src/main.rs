@@ -70,6 +70,15 @@ enum JapaneseDogs {
     KaiKen,
 }
 
+#[derive(Debug, PartialEq)]
+enum EnumTypes {
+    NamedType,           // named type
+    String,              // unnamed String type
+    NamedString(String), // named String as a tuple
+    StructLike { name: String },
+    TupleLike(String, i32),
+}
+
 pub fn main() {
     print_string(String::from("my String"));
     print_str(&String::from("my String"));
@@ -137,4 +146,5 @@ pub fn main() {
         "using enums JapaneseDogs: {}",
         JapaneseDogs::AkitaKen as u32
     );
+    println!("enum type: {:?}", EnumTypes::String);
 }
