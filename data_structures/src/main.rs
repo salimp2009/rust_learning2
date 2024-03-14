@@ -1,5 +1,5 @@
 use metrohash::MetroBuildHasher;
-use std::collections::HashMap;
+use std::{collections::HashMap, io::Read};
 
 pub fn print_string(s: String) {
     println!("print_string: {}", s);
@@ -79,7 +79,31 @@ enum EnumTypes {
     TupleLike(String, i32),
 }
 
-pub fn main() {
+#[derive(Debug)]
+pub struct Error {
+    message: String,
+}
+
+impl From<std::io::Error> for Error {
+    fn from(other: std::io::Error) -> Self {
+        Error {
+            message: other.to_string(),
+        }
+    }
+    // add code here
+}
+
+fn read_file(name: &str) -> Result<String, Error> {
+    use std::fs::File;
+    use std::io::prelude::*;
+
+    let mut file = File::open(name)?;
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)?;
+    Ok(contents)
+}
+
+pub fn main() -> Result<(), Error> {
     print_string(String::from("my String"));
     print_str(&String::from("my String"));
     print_str("my &str");
@@ -147,4 +171,27 @@ pub fn main() {
         JapaneseDogs::AkitaKen as u32
     );
     println!("enum type: {:?}", EnumTypes::String);
+    let file_content = read_file("testfile.txt")?;
+    println!("file content : {:?}", file_content);
+
+    let mut v = vec![1, 2, 3, 4];
+    // this compiles because after the first push there is a break
+    // if there is no break it wont compile
+    for i in &v {
+        if *i % 2 == 0 {
+            v.push(*i);
+            break;
+        }
+    }
+    println!("vec updated: {:?}", v);
+    // this wont compile since there is no break
+    // and since the pushed value will be used later
+    // borrow checker will not let this happen
+    // for i in v.iter() {
+    //     if *i % 2 == 0 {
+    //         v.push(*i);
+    //         // break;
+    //     }
+    // }
+    Ok(())
 }
