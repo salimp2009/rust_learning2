@@ -39,4 +39,10 @@ fn main() {
     println!("top movies: {:?}", top_movies_moved);
 
     deep_copy_examples();
+    let v: Vec<_> = "abcXXXabcYYYabc".match_indices("abc").collect();
+    assert_eq!(v, [(0, "abc"), (6, "abc"), (12, "abc")]);
+    println!("match indices: {:?}", v);
+    let v: Vec<_> = "abcXXXabcYYY0abc".rmatch_indices("abc").collect();
+    assert_eq!(v, [(13, "abc"), (6, "abc"), (0, "abc")]);
+    println!("rmatch indices: {:?}", v);
 }
