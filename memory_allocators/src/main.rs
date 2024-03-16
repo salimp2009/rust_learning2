@@ -1,4 +1,4 @@
-use memory_allocators::linkedlist;
+use memory_allocators::linkedlist::{self, SinglyLinkedList};
 use std::{borrow::BorrowMut, mem};
 
 fn deep_copy_examples() {
@@ -46,4 +46,18 @@ fn main() {
     let v: Vec<_> = "abcXXXabcYYY0abc".rmatch_indices("abc").collect();
     assert_eq!(v, [(13, "abc"), (6, "abc"), (0, "abc")]);
     println!("rmatch indices: {:?}", v);
+    let mut list = SinglyLinkedList::new("head");
+    list.append("middle");
+    list.append("tail");
+    println!("list: {:?}", list);
+    println!("list: {:?}", list.head());
+    let mut item = list.head();
+    loop {
+        println!("item: {}", item.data());
+        if let Some(next_item) = item.next() {
+            item = next_item;
+        } else {
+            break;
+        }
+    }
 }

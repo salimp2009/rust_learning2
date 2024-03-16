@@ -1,8 +1,10 @@
+#[derive(Debug)]
 pub struct ListItem<T> {
     data: Box<T>,
     next: Option<Box<ListItem<T>>>,
 }
 
+#[derive(Debug)]
 pub struct SinglyLinkedList<T> {
     head: ListItem<T>,
 }
@@ -35,5 +37,21 @@ impl<T> ListItem<T> {
     pub fn data(&self) -> &T {
         //&self.data
         self.data.as_ref()
+    }
+}
+
+impl<T> SinglyLinkedList<T> {
+    pub fn new(data: T) -> Self {
+        SinglyLinkedList {
+            head: ListItem::new(data),
+        }
+    }
+    pub fn append(&mut self, data: T) {
+        let tail = self.head.mut_tail();
+        tail.next = Some(Box::new(ListItem::new(data)));
+    }
+
+    pub fn head(&self) -> &ListItem<T> {
+        &self.head
     }
 }
