@@ -1,5 +1,6 @@
+use memory_allocators::doublylinkedlist::{self, DoublyLinkedList};
 use memory_allocators::linkedlist::{self, SinglyLinkedList};
-use std::{borrow::BorrowMut, mem};
+use std::mem;
 
 fn deep_copy_examples() {
     let mut most_populous_us_cities = vec!["LA", "New York City", "Chicago"];
@@ -58,6 +59,23 @@ fn main() {
             item = next_item;
         } else {
             break;
+        }
+    }
+
+    let mut list = DoublyLinkedList::new("head");
+    list.append("first");
+    list.append("second");
+    list.append("third");
+    list.append("tail");
+    println!("doublylinkedlist head: {:?}", list.head().borrow().data());
+    let mut item = list.head();
+    loop {
+        println!("item: {}", item.borrow().data());
+        if item.borrow().next.is_none() {
+            break;
+        } else {
+            let next_item = item.borrow().next.as_ref().unwrap().clone();
+            item = next_item;
         }
     }
 }

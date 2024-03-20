@@ -1,12 +1,13 @@
 use std::cell::RefCell;
+use std::clone;
 use std::rc::Rc;
 
 type ItemRef<T> = Rc<RefCell<ListItem<T>>>;
 
 pub struct ListItem<T> {
-    prev: Option<ItemRef<T>>,
+    pub prev: Option<ItemRef<T>>,
     data: Box<T>,
-    next: Option<ItemRef<T>>,
+    pub next: Option<ItemRef<T>>,
 }
 
 pub struct DoublyLinkedList<T> {
@@ -46,5 +47,12 @@ impl<T> DoublyLinkedList<T> {
         } else {
             item.clone()
         }
+    }
+
+    pub fn append(&mut self, data: T) {
+        let tail = Self::find_tail(self.head.clone());
+        let new_item = Rc::new(RefCell::new(ListItem::new(data)));
+        new_item.borrow_mut().prev = Some(tail.clone());
+        tail.borrow_mut().next = Some(new_item);
     }
 }
