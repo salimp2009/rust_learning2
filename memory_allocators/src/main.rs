@@ -1,5 +1,6 @@
 use memory_allocators::doublylinkedlist::{self, DoublyLinkedList};
 use memory_allocators::linkedlist::{self, SinglyLinkedList};
+use memory_allocators::linkedlistCow::SinglyLinkedListC;
 use std::mem;
 
 fn deep_copy_examples() {
@@ -76,6 +77,21 @@ fn main() {
         } else {
             let next_item = item.borrow().next.as_ref().unwrap().clone();
             item = next_item;
+        }
+    }
+
+    let list = SinglyLinkedListC::new("head");
+    let list = list.append("middle");
+    let list = list.append("tail");
+    println!("SinglyLinkedListC list: {:?}", list);
+    println!(" SinglyLinkedListC list: {:?}", list.head());
+    let mut item = list.head();
+    loop {
+        println!("SinglyLinkedListC item: {}", item.data());
+        if let Some(next_item) = item.next() {
+            item = next_item;
+        } else {
+            break;
         }
     }
 }

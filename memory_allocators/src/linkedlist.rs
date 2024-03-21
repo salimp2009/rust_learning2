@@ -1,7 +1,7 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ListItem<T> {
-    data: Box<T>,
-    next: Option<Box<ListItem<T>>>,
+    pub data: Box<T>,
+    pub next: Option<Box<ListItem<T>>>,
 }
 
 #[derive(Debug)]

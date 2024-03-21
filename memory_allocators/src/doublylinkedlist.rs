@@ -4,6 +4,7 @@ use std::rc::Rc;
 
 type ItemRef<T> = Rc<RefCell<ListItem<T>>>;
 
+#[derive(Clone)]
 pub struct ListItem<T> {
     pub prev: Option<ItemRef<T>>,
     data: Box<T>,
