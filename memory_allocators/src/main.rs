@@ -1,3 +1,6 @@
+#![feature(allocator_api)]
+
+use memory_allocators::custom_alloc::{self, PassThruAllocator};
 use memory_allocators::doublylinkedlist::{self, DoublyLinkedList};
 use memory_allocators::linkedlist::{self, SinglyLinkedList};
 use memory_allocators::linkedlistCow::SinglyLinkedListC;
@@ -94,4 +97,7 @@ fn main() {
             break;
         }
     }
+    let mut custom_alloc_vec: Vec<i32, _> = Vec::with_capacity_in(10, PassThruAllocator);
+    (1..=10).for_each(|elem| custom_alloc_vec.push(elem));
+    println!("custom_alloc_vec: {:?}", custom_alloc_vec);
 }
