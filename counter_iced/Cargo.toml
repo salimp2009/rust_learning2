@@ -11,4 +11,4 @@ iced = "*"
 
 [patch.crates-io]
 # iced_aw = { git = 'https://github.com/iced-rs/iced_aw.git', rev = 'ed59455' }
-wgpu = { git = "https://github.com/gfx-rs/wgpu", rev = "ac8756c" }
+# wgpu = { git = "https://github.com/gfx-rs/wgpu", rev = "ac8756c" }

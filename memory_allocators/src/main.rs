@@ -1,5 +1,6 @@
 #![feature(allocator_api)]
 
+use memory_allocators::basicallocator::BasicAllocator;
 use memory_allocators::custom_alloc::{self, PassThruAllocator};
 use memory_allocators::doublylinkedlist::{self, DoublyLinkedList};
 use memory_allocators::linkedlist::{self, SinglyLinkedList};
@@ -43,7 +44,6 @@ fn main() {
     let mut top_movies_moved = top_movies;
     top_movies_moved.push("Star Wars: Force Awakens");
     println!("top movies: {:?}", top_movies_moved);
-
     deep_copy_examples();
     let v: Vec<_> = "abcXXXabcYYYabc".match_indices("abc").collect();
     assert_eq!(v, [(0, "abc"), (6, "abc"), (12, "abc")]);
@@ -98,6 +98,10 @@ fn main() {
         }
     }
     let mut custom_alloc_vec: Vec<i32, _> = Vec::with_capacity_in(10, PassThruAllocator);
+    (1..=10).for_each(|elem| custom_alloc_vec.push(elem));
+    println!("custom_alloc_vec: {:?}", custom_alloc_vec);
+
+    let mut custom_alloc_vec: Vec<i32, _> = Vec::with_capacity_in(10, BasicAllocator);
     (1..=10).for_each(|elem| custom_alloc_vec.push(elem));
     println!("custom_alloc_vec: {:?}", custom_alloc_vec);
 }
