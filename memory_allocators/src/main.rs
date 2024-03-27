@@ -34,6 +34,16 @@ impl<T> Buf<T> {
     }
 }
 
+#[cfg(target_family = "unix")]
+fn get_platform() -> String {
+    "UNIX".into()
+}
+
+#[cfg(target_family = "windows")]
+fn get_platform() -> String {
+    "Windows".into()
+}
+
 fn main() {
     // examples for borrow checker
     let mut top_movies = vec!["Avatar", "Avengers:EndGame", "Iron Man"];
@@ -104,4 +114,15 @@ fn main() {
     let mut custom_alloc_vec: Vec<i32, _> = Vec::with_capacity_in(10, BasicAllocator);
     (1..=10).for_each(|elem| custom_alloc_vec.push(elem));
     println!("custom_alloc_vec: {:?}", custom_alloc_vec);
+
+    // example cfg macro usage
+    println!("running on: {}", get_platform());
+    if cfg!(target_feature = "avx2") {
+        println!("avx2 enabled");
+    } else {
+        println!("avx2 not enabled");
+    }
+    if cfg!(not(any(target_arch = "x86", target_arch = "x86_64"))) {
+        println!("code running on a non Intel CPU");
+    }
 }
