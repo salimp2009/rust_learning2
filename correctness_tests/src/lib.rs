@@ -1,10 +1,14 @@
-pub fn add<T: std::ops::Add<Output = T>>(left: T, right: T) -> T {
-    left + right
+extern crate num_traits;
+use num_traits::ops::wrapping::WrappingAdd;
+
+pub fn add<T: WrappingAdd<Output = T>>(left: T, right: T) -> T {
+    left.wrapping_add(&right)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use proptest::prelude::*;
 
     #[test]
     fn it_works() {
@@ -15,5 +19,11 @@ mod tests {
         assert!(std::ops::Add::add(a, b) == *"leftright");
         // assert!(a + &b == "leftright".to_string());
         // add("left".to_string(), "+right");
+    }
+    proptest! {
+        #[test]
+        fn test_add(a:i64, b:i64) {
+            assert_eq!(add(a, b), a.wrapping_add(b));
+        }
     }
 }
