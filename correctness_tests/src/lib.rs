@@ -9,6 +9,29 @@ pub fn add<T: WrappingAdd<Output = T>>(left: T, right: T) -> T {
 mod tests {
     use super::*;
     use proptest::prelude::*;
+    use std::sync::atomic::{AtomicI32, Ordering};
+
+    static mut COUNT: AtomicI32 = AtomicI32::new(0);
+
+    // these count test may fail depending on the order
+    // if assert_eq! are commented out;
+    // since cargo test runs on multiple threads
+    #[test]
+    fn test_count_unsafe() {
+        unsafe {
+            COUNT.fetch_add(1, Ordering::AcqRel);
+            println!("COUNT1: {:#?}", COUNT);
+            // assert_eq!(COUNT.load(Ordering::Acquire), 1);
+        }
+    }
+    #[test]
+    fn test_count_unsafe2() {
+        unsafe {
+            COUNT.fetch_add(1, Ordering::AcqRel);
+            println!("COUNT2: {:#?}", COUNT);
+            // assert_eq!(COUNT.load(Ordering::Acquire), 2);
+        }
+    }
 
     #[test]
     fn it_works() {
