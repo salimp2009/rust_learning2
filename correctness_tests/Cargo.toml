@@ -9,3 +9,4 @@ num-traits = "*"
 
 [dev-dependencies]
 proptest = "*"
+lazy_static = "*"
