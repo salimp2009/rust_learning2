@@ -12,7 +12,7 @@ mod tests {
     use proptest::prelude::*;
     use std::sync::{
         atomic::{AtomicI32, Ordering},
-        Arc,
+        Arc, Mutex,
     };
     static mut COUNT: AtomicI32 = AtomicI32::new(0);
     // below does not compile since static variable can only be called in
@@ -20,7 +20,7 @@ mod tests {
     // static COUNT2: Arc<AtomicI32> = Arc::new(AtomicI32::new(0));
 
     lazy_static! {
-        static ref COUNT2: Arc<AtomicI32> = Arc::new(AtomicI32::new(0));
+        static ref COUNT2: Mutex<i32> = Mutex::new(0);
     }
     // these count test may fail depending on the order
     // if assert_eq! are commented out;
@@ -28,15 +28,15 @@ mod tests {
 
     #[test]
     fn test_lazy_static() {
-        let count = Arc::clone(&COUNT2);
-        count.fetch_add(1, Ordering::AcqRel);
+        let mut count = COUNT2.lock().expect("couldn't acquire lock");
+        *count += 1;
         println!("COUNT2: first test {:?}", count);
     }
 
     #[test]
     fn test_lazy_static2() {
-        let count = Arc::clone(&COUNT2);
-        count.fetch_add(1, Ordering::AcqRel);
+        let mut count = COUNT2.lock().expect("couldn't acquire lock");
+        *count += 1;
         println!("COUNT2: second test {:?}", count);
     }
 
