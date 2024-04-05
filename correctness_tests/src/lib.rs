@@ -5,6 +5,23 @@ pub fn add<T: WrappingAdd<Output = T>>(left: T, right: T) -> T {
     left.wrapping_add(&right)
 }
 
+pub fn fizz_buzz(n: i32) -> Vec<String> {
+    let mut result: Vec<String> = Vec::new();
+
+    (1..n + 1).for_each(|i| {
+        if i % 3 == 0 && i % 5 == 0 {
+            result.push("FizzBuzz".into());
+        } else if i % 3 == 0 {
+            result.push("Fizz".into());
+        } else if i % 5 == 0 {
+            result.push("Buzz".into());
+        } else {
+            result.push(i.to_string());
+        }
+    });
+    result
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
