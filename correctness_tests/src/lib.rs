@@ -22,6 +22,14 @@ pub fn fizz_buzz(n: i32) -> Vec<String> {
     result
 }
 
+pub fn better_fizz(n: i32) -> Vec<String> {
+    use std::collections::HashMap;
+    let mapping = HashMap::from([(3, "Fizz"), (5, "Buzz")]);
+    let mut result = vec![String::new(); n as usize];
+    let mut keys: Vec<&i32> = mapping.keys().collect();
+    result
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -38,6 +46,19 @@ mod tests {
 
     lazy_static! {
         static ref COUNT2: Mutex<i32> = Mutex::new(0);
+    }
+
+    #[test]
+    fn test_fizzbuzz() {
+        assert_eq!(fizz_buzz(3), vec!["1", "2", "Fizz"]);
+        assert_eq!(fizz_buzz(5), vec!["1", "2", "Fizz", "4", "Buzz"]);
+        assert_eq!(
+            fizz_buzz(15),
+            vec![
+                "1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz",
+                "13", "14", "FizzBuzz",
+            ]
+        )
     }
     // these count test may fail depending on the order
     // if assert_eq! are commented out;
