@@ -1,8 +1,14 @@
 extern crate num_traits;
 use num_traits::ops::wrapping::WrappingAdd;
+// use std::ops::Add;
 
 pub fn add<T: WrappingAdd<Output = T>>(left: T, right: T) -> T {
     left.wrapping_add(&right)
+}
+
+pub fn add_wrapped(left: u64, right: u64) -> u64 {
+    // left + right
+    left.wrapping_add(right)
 }
 
 pub fn fizz_buzz(n: i32) -> Vec<String> {
@@ -27,6 +33,7 @@ pub fn better_fizz(n: i32) -> Vec<String> {
     let mapping = HashMap::from([(3, "Fizz"), (5, "Buzz")]);
     let mut result = vec![String::new(); n as usize];
     let mut keys: Vec<&i32> = mapping.keys().collect();
+    keys.sort();
     result
 }
 
@@ -109,6 +116,10 @@ mod tests {
         #[test]
         fn test_add(a:i64, b:i64) {
             assert_eq!(add(a, b), a.wrapping_add(b));
+        }
+        #[test]
+        fn test_unsigned(a: u64, b:u64) {
+            assert_eq!(add_wrapped(a, b), a.wrapping_add(b));
         }
     }
 }
